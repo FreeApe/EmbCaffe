@@ -10,6 +10,20 @@
 - Support GPU/CPU model
 - Cross-platform
 
+# Requirements
+
+```
+System          : Linux / Ubuntu 14.04
+C++ compiler    : 4.8+
+BLAS            : Atlas
+Boost           : 1.54
+glog            : Y
+gflags          : Y
+protobuf        : 2.6.1
+CUDA            : 7.5
+cuDNN           : 5.0.5
+```
+
 # Build
 
 ## Build EmbCaffe
@@ -37,6 +51,14 @@ $ make all -j
 
 ## Build demo
 
+## Build Errors?
+
+```
+    1. error ‘type name’ declared as function returning an array escape
+
+    Make sure the CUDA version 7.5
+```
+
 # TODO
 
 - Remove Backward calculation
@@ -44,3 +66,5 @@ $ make all -j
 - Support windows system
 - Optimize the calculation
 - ......
+
+

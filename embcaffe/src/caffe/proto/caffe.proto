@@ -40,59 +40,122 @@ message Datum {
   optional bool encoded = 7 [default = false];
 }
 
+// The label (display) name and label id.
+message LabelMapItem {
+    // Both name and label are required.
+    optional string name = 1;
+    optional int32 label = 2;
+    // display_name is optional.
+    optional string display_name = 3;
+}
+
+message LabelMap {
+    repeated LabelMapItem item = 1;
+}
+
+
+// Condition for emitting annotations.
+message EmitConstraint {
+    enum EmitType {
+        CENTER = 0;
+        MIN_OVERLAP = 1;
+    }
+    optional EmitType emit_type = 1 [default = CENTER];
+    // If emit_type is MIN_OVERLAP, provide the emit_overlap.
+    optional float emit_overlap = 2;
+}
+
+// The normalized bounding box [0, 1] w.r.t. the input image size.
+message NormalizedBBox {
+    optional float xmin = 1;
+    optional float ymin = 2;
+    optional float xmax = 3;
+    optional float ymax = 4;
+    optional int32 label = 5;
+    optional bool difficult = 6;
+    optional float score = 7;
+    optional float size = 8;
+}
+
+// Annotation for each object instance.
+message Annotation {
+    optional int32 instance_id = 1 [default = 0];
+    optional NormalizedBBox bbox = 2;
+}
+
+// Group of annotations for a particular label.
+message AnnotationGroup {
+    optional int32 group_label = 1;
+    repeated Annotation annotation = 2;
+}
+
+// An extension of Datum which contains "rich" annotations.
+message AnnotatedDatum {
+    enum AnnotationType {
+        BBOX = 0;
+    }
+    optional Datum datum = 1;
+    // If there are "rich" annotations, specify the type of annotation.
+    // Currently it only supports bounding box.
+    // If there are no "rich" annotations, use label in datum instead.
+    optional AnnotationType type = 2;
+    // Each group contains annotation for a particular class.
+    repeated AnnotationGroup annotation_group = 3;
+}
+
 message FillerParameter {
-  // The filler type.
-  optional string type = 1 [default = 'constant'];
-  optional float value = 2 [default = 0]; // the value in constant filler
-  optional float min = 3 [default = 0]; // the min value in uniform filler
-  optional float max = 4 [default = 1]; // the max value in uniform filler
-  optional float mean = 5 [default = 0]; // the mean value in Gaussian filler
-  optional float std = 6 [default = 1]; // the std value in Gaussian filler
-  // The expected number of non-zero output weights for a given input in
-  // Gaussian filler -- the default -1 means don't perform sparsification.
-  optional int32 sparse = 7 [default = -1];
-  // Normalize the filler variance by fan_in, fan_out, or their average.
-  // Applies to 'xavier' and 'msra' fillers.
-  enum VarianceNorm {
-    FAN_IN = 0;
-    FAN_OUT = 1;
-    AVERAGE = 2;
-  }
-  optional VarianceNorm variance_norm = 8 [default = FAN_IN];
+    // The filler type.
+    optional string type = 1 [default = 'constant'];
+    optional float value = 2 [default = 0]; // the value in constant filler
+    optional float min = 3 [default = 0]; // the min value in uniform filler
+    optional float max = 4 [default = 1]; // the max value in uniform filler
+    optional float mean = 5 [default = 0]; // the mean value in Gaussian filler
+    optional float std = 6 [default = 1]; // the std value in Gaussian filler
+    // The expected number of non-zero output weights for a given input in
+    // Gaussian filler -- the default -1 means don't perform sparsification.
+    optional int32 sparse = 7 [default = -1];
+    // Normalize the filler variance by fan_in, fan_out, or their average.
+    // Applies to 'xavier' and 'msra' fillers.
+    enum VarianceNorm {
+        FAN_IN = 0;
+        FAN_OUT = 1;
+        AVERAGE = 2;
+    }
+    optional VarianceNorm variance_norm = 8 [default = FAN_IN];
 }
 
 message NetParameter {
-  optional string name = 1; // consider giving the network a name
-  // The input blobs to the network.
-  repeated string input = 3;
-  // The shape of the input blobs.
-  repeated BlobShape input_shape = 8;
+    optional string name = 1; // consider giving the network a name
+    // The input blobs to the network.
+    repeated string input = 3;
+    // The shape of the input blobs.
+    repeated BlobShape input_shape = 8;
 
-  // 4D input dimensions -- deprecated.  Use "shape" instead.
-  // If specified, for each input blob there should be four
-  // values specifying the num, channels, height and width of the input blob.
-  // Thus, there should be a total of (4 * #input) numbers.
-  repeated int32 input_dim = 4;
+    // 4D input dimensions -- deprecated.  Use "shape" instead.
+    // If specified, for each input blob there should be four
+    // values specifying the num, channels, height and width of the input blob.
+    // Thus, there should be a total of (4 * #input) numbers.
+    repeated int32 input_dim = 4;
 
-  // Whether the network will force every layer to carry out backward operation.
-  // If set False, then whether to carry out backward is determined
-  // automatically according to the net structure and learning rates.
-  optional bool force_backward = 5 [default = false];
-  // The current "state" of the network, including the phase, level, and stage.
-  // Some layers may be included/excluded depending on this state and the states
-  // specified in the layers' include and exclude fields.
-  optional NetState state = 6;
+    // Whether the network will force every layer to carry out backward operation.
+    // If set False, then whether to carry out backward is determined
+    // automatically according to the net structure and learning rates.
+    optional bool force_backward = 5 [default = false];
+    // The current "state" of the network, including the phase, level, and stage.
+    // Some layers may be included/excluded depending on this state and the states
+    // specified in the layers' include and exclude fields.
+    optional NetState state = 6;
 
-  // Print debugging information about results while running Net::Forward,
-  // Net::Backward, and Net::Update.
-  optional bool debug_info = 7 [default = false];
+    // Print debugging information about results while running Net::Forward,
+    // Net::Backward, and Net::Update.
+    optional bool debug_info = 7 [default = false];
 
-  // The layers that make up the net.  Each of their configurations, including
-  // connectivity and behavior, is specified as a LayerParameter.
-  repeated LayerParameter layer = 100;  // ID 100 so layers are printed last.
+    // The layers that make up the net.  Each of their configurations, including
+    // connectivity and behavior, is specified as a LayerParameter.
+    repeated LayerParameter layer = 100;  // ID 100 so layers are printed last.
 
-  // DEPRECATED: use 'layer' instead.
-  repeated V1LayerParameter layers = 2;
+    // DEPRECATED: use 'layer' instead.
+    repeated V1LayerParameter layers = 2;
 }
 
 // NOTE
@@ -100,207 +163,207 @@ message NetParameter {
 //
 // SolverParameter next available ID: 41 (last added: type)
 message SolverParameter {
-  //////////////////////////////////////////////////////////////////////////////
-  // Specifying the train and test networks
-  //
-  // Exactly one train net must be specified using one of the following fields:
-  //     train_net_param, train_net, net_param, net
-  // One or more test nets may be specified using any of the following fields:
-  //     test_net_param, test_net, net_param, net
-  // If more than one test net field is specified (e.g., both net and
-  // test_net are specified), they will be evaluated in the field order given
-  // above: (1) test_net_param, (2) test_net, (3) net_param/net.
-  // A test_iter must be specified for each test_net.
-  // A test_level and/or a test_stage may also be specified for each test_net.
-  //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    // Specifying the train and test networks
+    //
+    // Exactly one train net must be specified using one of the following fields:
+    //     train_net_param, train_net, net_param, net
+    // One or more test nets may be specified using any of the following fields:
+    //     test_net_param, test_net, net_param, net
+    // If more than one test net field is specified (e.g., both net and
+    // test_net are specified), they will be evaluated in the field order given
+    // above: (1) test_net_param, (2) test_net, (3) net_param/net.
+    // A test_iter must be specified for each test_net.
+    // A test_level and/or a test_stage may also be specified for each test_net.
+    //////////////////////////////////////////////////////////////////////////////
 
-  // Proto filename for the train net, possibly combined with one or more
-  // test nets.
-  optional string net = 24;
-  // Inline train net param, possibly combined with one or more test nets.
-  optional NetParameter net_param = 25;
+    // Proto filename for the train net, possibly combined with one or more
+    // test nets.
+    optional string net = 24;
+    // Inline train net param, possibly combined with one or more test nets.
+    optional NetParameter net_param = 25;
 
-  optional string train_net = 1; // Proto filename for the train net.
-  repeated string test_net = 2; // Proto filenames for the test nets.
-  optional NetParameter train_net_param = 21; // Inline train net params.
-  repeated NetParameter test_net_param = 22; // Inline test net params.
+    optional string train_net = 1; // Proto filename for the train net.
+    repeated string test_net = 2; // Proto filenames for the test nets.
+    optional NetParameter train_net_param = 21; // Inline train net params.
+    repeated NetParameter test_net_param = 22; // Inline test net params.
 
-  // The states for the train/test nets. Must be unspecified or
-  // specified once per net.
-  //
-  // By default, all states will have solver = true;
-  // train_state will have phase = TRAIN,
-  // and all test_state's will have phase = TEST.
-  // Other defaults are set according to the NetState defaults.
-  optional NetState train_state = 26;
-  repeated NetState test_state = 27;
+    // The states for the train/test nets. Must be unspecified or
+    // specified once per net.
+    //
+    // By default, all states will have solver = true;
+    // train_state will have phase = TRAIN,
+    // and all test_state's will have phase = TEST.
+    // Other defaults are set according to the NetState defaults.
+    optional NetState train_state = 26;
+    repeated NetState test_state = 27;
 
-  // The number of iterations for each test net.
-  repeated int32 test_iter = 3;
+    // The number of iterations for each test net.
+    repeated int32 test_iter = 3;
 
-  // The number of iterations between two testing phases.
-  optional int32 test_interval = 4 [default = 0];
-  optional bool test_compute_loss = 19 [default = false];
-  // If true, run an initial test pass before the first iteration,
-  // ensuring memory availability and printing the starting value of the loss.
-  optional bool test_initialization = 32 [default = true];
-  optional float base_lr = 5; // The base learning rate
-  // the number of iterations between displaying info. If display = 0, no info
-  // will be displayed.
-  optional int32 display = 6;
-  // Display the loss averaged over the last average_loss iterations
-  optional int32 average_loss = 33 [default = 1];
-  optional int32 max_iter = 7; // the maximum number of iterations
-  // accumulate gradients over `iter_size` x `batch_size` instances
-  optional int32 iter_size = 36 [default = 1];
+    // The number of iterations between two testing phases.
+    optional int32 test_interval = 4 [default = 0];
+    optional bool test_compute_loss = 19 [default = false];
+    // If true, run an initial test pass before the first iteration,
+    // ensuring memory availability and printing the starting value of the loss.
+    optional bool test_initialization = 32 [default = true];
+    optional float base_lr = 5; // The base learning rate
+    // the number of iterations between displaying info. If display = 0, no info
+    // will be displayed.
+    optional int32 display = 6;
+    // Display the loss averaged over the last average_loss iterations
+    optional int32 average_loss = 33 [default = 1];
+    optional int32 max_iter = 7; // the maximum number of iterations
+    // accumulate gradients over `iter_size` x `batch_size` instances
+    optional int32 iter_size = 36 [default = 1];
 
-  // The learning rate decay policy. The currently implemented learning rate
-  // policies are as follows:
-  //    - fixed: always return base_lr.
-  //    - step: return base_lr * gamma ^ (floor(iter / step))
-  //    - exp: return base_lr * gamma ^ iter
-  //    - inv: return base_lr * (1 + gamma * iter) ^ (- power)
-  //    - multistep: similar to step but it allows non uniform steps defined by
-  //      stepvalue
-  //    - poly: the effective learning rate follows a polynomial decay, to be
-  //      zero by the max_iter. return base_lr (1 - iter/max_iter) ^ (power)
-  //    - sigmoid: the effective learning rate follows a sigmod decay
-  //      return base_lr ( 1/(1 + exp(-gamma * (iter - stepsize))))
-  //
-  // where base_lr, max_iter, gamma, step, stepvalue and power are defined
-  // in the solver parameter protocol buffer, and iter is the current iteration.
-  optional string lr_policy = 8;
-  optional float gamma = 9; // The parameter to compute the learning rate.
-  optional float power = 10; // The parameter to compute the learning rate.
-  optional float momentum = 11; // The momentum value.
-  optional float weight_decay = 12; // The weight decay.
-  // regularization types supported: L1 and L2
-  // controlled by weight_decay
-  optional string regularization_type = 29 [default = "L2"];
-  // the stepsize for learning rate policy "step"
-  optional int32 stepsize = 13;
-  // the stepsize for learning rate policy "multistep"
-  repeated int32 stepvalue = 34;
+    // The learning rate decay policy. The currently implemented learning rate
+    // policies are as follows:
+    //    - fixed: always return base_lr.
+    //    - step: return base_lr * gamma ^ (floor(iter / step))
+    //    - exp: return base_lr * gamma ^ iter
+    //    - inv: return base_lr * (1 + gamma * iter) ^ (- power)
+    //    - multistep: similar to step but it allows non uniform steps defined by
+    //      stepvalue
+    //    - poly: the effective learning rate follows a polynomial decay, to be
+    //      zero by the max_iter. return base_lr (1 - iter/max_iter) ^ (power)
+    //    - sigmoid: the effective learning rate follows a sigmod decay
+    //      return base_lr ( 1/(1 + exp(-gamma * (iter - stepsize))))
+    //
+    // where base_lr, max_iter, gamma, step, stepvalue and power are defined
+    // in the solver parameter protocol buffer, and iter is the current iteration.
+    optional string lr_policy = 8;
+    optional float gamma = 9; // The parameter to compute the learning rate.
+    optional float power = 10; // The parameter to compute the learning rate.
+    optional float momentum = 11; // The momentum value.
+    optional float weight_decay = 12; // The weight decay.
+    // regularization types supported: L1 and L2
+    // controlled by weight_decay
+    optional string regularization_type = 29 [default = "L2"];
+    // the stepsize for learning rate policy "step"
+    optional int32 stepsize = 13;
+    // the stepsize for learning rate policy "multistep"
+    repeated int32 stepvalue = 34;
 
-  // Set clip_gradients to >= 0 to clip parameter gradients to that L2 norm,
-  // whenever their actual L2 norm is larger.
-  optional float clip_gradients = 35 [default = -1];
+    // Set clip_gradients to >= 0 to clip parameter gradients to that L2 norm,
+    // whenever their actual L2 norm is larger.
+    optional float clip_gradients = 35 [default = -1];
 
-  optional int32 snapshot = 14 [default = 0]; // The snapshot interval
-  optional string snapshot_prefix = 15; // The prefix for the snapshot.
-  // whether to snapshot diff in the results or not. Snapshotting diff will help
-  // debugging but the final protocol buffer size will be much larger.
-  optional bool snapshot_diff = 16 [default = false];
-  enum SnapshotFormat {
-    HDF5 = 0;
-    BINARYPROTO = 1;
-  }
-  optional SnapshotFormat snapshot_format = 37 [default = BINARYPROTO];
-  // the mode solver will use: 0 for CPU and 1 for GPU. Use GPU in default.
-  enum SolverMode {
-    CPU = 0;
-    GPU = 1;
-  }
-  optional SolverMode solver_mode = 17 [default = GPU];
-  // the device_id will that be used in GPU mode. Use device_id = 0 in default.
-  optional int32 device_id = 18 [default = 0];
-  // If non-negative, the seed with which the Solver will initialize the Caffe
-  // random number generator -- useful for reproducible results. Otherwise,
-  // (and by default) initialize using a seed derived from the system clock.
-  optional int64 random_seed = 20 [default = -1];
+    optional int32 snapshot = 14 [default = 0]; // The snapshot interval
+    optional string snapshot_prefix = 15; // The prefix for the snapshot.
+    // whether to snapshot diff in the results or not. Snapshotting diff will help
+    // debugging but the final protocol buffer size will be much larger.
+    optional bool snapshot_diff = 16 [default = false];
+    enum SnapshotFormat {
+        HDF5 = 0;
+        BINARYPROTO = 1;
+    }
+    optional SnapshotFormat snapshot_format = 37 [default = BINARYPROTO];
+    // the mode solver will use: 0 for CPU and 1 for GPU. Use GPU in default.
+    enum SolverMode {
+        CPU = 0;
+        GPU = 1;
+    }
+    optional SolverMode solver_mode = 17 [default = GPU];
+    // the device_id will that be used in GPU mode. Use device_id = 0 in default.
+    optional int32 device_id = 18 [default = 0];
+    // If non-negative, the seed with which the Solver will initialize the Caffe
+    // random number generator -- useful for reproducible results. Otherwise,
+    // (and by default) initialize using a seed derived from the system clock.
+    optional int64 random_seed = 20 [default = -1];
 
-  // type of the solver
-  optional string type = 40 [default = "SGD"];
+    // type of the solver
+    optional string type = 40 [default = "SGD"];
 
-  // numerical stability for RMSProp, AdaGrad and AdaDelta and Adam
-  optional float delta = 31 [default = 1e-8];
-  // parameters for the Adam solver
-  optional float momentum2 = 39 [default = 0.999];
+    // numerical stability for RMSProp, AdaGrad and AdaDelta and Adam
+    optional float delta = 31 [default = 1e-8];
+    // parameters for the Adam solver
+    optional float momentum2 = 39 [default = 0.999];
 
-  // RMSProp decay value
-  // MeanSquare(t) = rms_decay*MeanSquare(t-1) + (1-rms_decay)*SquareGradient(t)
-  optional float rms_decay = 38;
+    // RMSProp decay value
+    // MeanSquare(t) = rms_decay*MeanSquare(t-1) + (1-rms_decay)*SquareGradient(t)
+    optional float rms_decay = 38;
 
-  // If true, print information about the state of the net that may help with
-  // debugging learning problems.
-  optional bool debug_info = 23 [default = false];
+    // If true, print information about the state of the net that may help with
+    // debugging learning problems.
+    optional bool debug_info = 23 [default = false];
 
-  // If false, don't save a snapshot after training finishes.
-  optional bool snapshot_after_train = 28 [default = true];
+    // If false, don't save a snapshot after training finishes.
+    optional bool snapshot_after_train = 28 [default = true];
 
-  // DEPRECATED: old solver enum types, use string instead
-  enum SolverType {
-    SGD = 0;
-    NESTEROV = 1;
-    ADAGRAD = 2;
-    RMSPROP = 3;
-    ADADELTA = 4;
-    ADAM = 5;
-  }
-  // DEPRECATED: use type instead of solver_type
-  optional SolverType solver_type = 30 [default = SGD];
+    // DEPRECATED: old solver enum types, use string instead
+    enum SolverType {
+        SGD = 0;
+        NESTEROV = 1;
+        ADAGRAD = 2;
+        RMSPROP = 3;
+        ADADELTA = 4;
+        ADAM = 5;
+    }
+    // DEPRECATED: use type instead of solver_type
+    optional SolverType solver_type = 30 [default = SGD];
 }
 
 // A message that stores the solver snapshots
 message SolverState {
-  optional int32 iter = 1; // The current iteration
-  optional string learned_net = 2; // The file that stores the learned net.
-  repeated BlobProto history = 3; // The history for sgd solvers
-  optional int32 current_step = 4 [default = 0]; // The current step for learning rate
+    optional int32 iter = 1; // The current iteration
+    optional string learned_net = 2; // The file that stores the learned net.
+    repeated BlobProto history = 3; // The history for sgd solvers
+    optional int32 current_step = 4 [default = 0]; // The current step for learning rate
 }
 
 enum Phase {
-   TRAIN = 0;
-   TEST = 1;
+    TRAIN = 0;
+    TEST = 1;
 }
 
 message NetState {
-  optional Phase phase = 1 [default = TEST];
-  optional int32 level = 2 [default = 0];
-  repeated string stage = 3;
+    optional Phase phase = 1 [default = TEST];
+    optional int32 level = 2 [default = 0];
+    repeated string stage = 3;
 }
 
 message NetStateRule {
-  // Set phase to require the NetState have a particular phase (TRAIN or TEST)
-  // to meet this rule.
-  optional Phase phase = 1;
+    // Set phase to require the NetState have a particular phase (TRAIN or TEST)
+    // to meet this rule.
+    optional Phase phase = 1;
 
-  // Set the minimum and/or maximum levels in which the layer should be used.
-  // Leave undefined to meet the rule regardless of level.
-  optional int32 min_level = 2;
-  optional int32 max_level = 3;
+    // Set the minimum and/or maximum levels in which the layer should be used.
+    // Leave undefined to meet the rule regardless of level.
+    optional int32 min_level = 2;
+    optional int32 max_level = 3;
 
-  // Customizable sets of stages to include or exclude.
-  // The net must have ALL of the specified stages and NONE of the specified
-  // "not_stage"s to meet the rule.
-  // (Use multiple NetStateRules to specify conjunctions of stages.)
-  repeated string stage = 4;
-  repeated string not_stage = 5;
+    // Customizable sets of stages to include or exclude.
+    // The net must have ALL of the specified stages and NONE of the specified
+    // "not_stage"s to meet the rule.
+    // (Use multiple NetStateRules to specify conjunctions of stages.)
+    repeated string stage = 4;
+    repeated string not_stage = 5;
 }
 
 // Specifies training parameters (multipliers on global learning constants,
 // and the name and other settings used for weight sharing).
 message ParamSpec {
-  // The names of the parameter blobs -- useful for sharing parameters among
-  // layers, but never required otherwise.  To share a parameter between two
-  // layers, give it a (non-empty) name.
-  optional string name = 1;
+    // The names of the parameter blobs -- useful for sharing parameters among
+    // layers, but never required otherwise.  To share a parameter between two
+    // layers, give it a (non-empty) name.
+    optional string name = 1;
 
-  // Whether to require shared weights to have the same shape, or just the same
-  // count -- defaults to STRICT if unspecified.
-  optional DimCheckMode share_mode = 2;
-  enum DimCheckMode {
-    // STRICT (default) requires that num, channels, height, width each match.
-    STRICT = 0;
-    // PERMISSIVE requires only the count (num*channels*height*width) to match.
-    PERMISSIVE = 1;
-  }
+    // Whether to require shared weights to have the same shape, or just the same
+    // count -- defaults to STRICT if unspecified.
+    optional DimCheckMode share_mode = 2;
+    enum DimCheckMode {
+        // STRICT (default) requires that num, channels, height, width each match.
+        STRICT = 0;
+        // PERMISSIVE requires only the count (num*channels*height*width) to match.
+        PERMISSIVE = 1;
+    }
 
-  // The multiplier on the global learning rate for this parameter.
-  optional float lr_mult = 3 [default = 1.0];
+    // The multiplier on the global learning rate for this parameter.
+    optional float lr_mult = 3 [default = 1.0];
 
-  // The multiplier on the global weight decay for this parameter.
-  optional float decay_mult = 4 [default = 1.0];
+    // The multiplier on the global weight decay for this parameter.
+    optional float decay_mult = 4 [default = 1.0];
 }
 
 // NOTE
@@ -308,41 +371,41 @@ message ParamSpec {
 //
 // LayerParameter next available layer-specific ID: 143 (last added: scale_param)
 message LayerParameter {
-  optional string name = 1; // the layer name
-  optional string type = 2; // the layer type
-  repeated string bottom = 3; // the name of each bottom blob
-  repeated string top = 4; // the name of each top blob
+    optional string name = 1; // the layer name
+    optional string type = 2; // the layer type
+    repeated string bottom = 3; // the name of each bottom blob
+    repeated string top = 4; // the name of each top blob
 
-  // The train / test phase for computation.
-  optional Phase phase = 10;
+    // The train / test phase for computation.
+    optional Phase phase = 10;
 
-  // The amount of weight to assign each top blob in the objective.
-  // Each layer assigns a default value, usually of either 0 or 1,
-  // to each top blob.
-  repeated float loss_weight = 5;
+    // The amount of weight to assign each top blob in the objective.
+    // Each layer assigns a default value, usually of either 0 or 1,
+    // to each top blob.
+    repeated float loss_weight = 5;
 
-  // Specifies training parameters (multipliers on global learning constants,
-  // and the name and other settings used for weight sharing).
-  repeated ParamSpec param = 6;
+    // Specifies training parameters (multipliers on global learning constants,
+    // and the name and other settings used for weight sharing).
+    repeated ParamSpec param = 6;
 
-  // The blobs containing the numeric parameters of the layer.
-  repeated BlobProto blobs = 7;
+    // The blobs containing the numeric parameters of the layer.
+    repeated BlobProto blobs = 7;
 
-  // Specifies on which bottoms the backpropagation should be skipped.
-  // The size must be either 0 or equal to the number of bottoms.
-  repeated bool propagate_down = 11;
+    // Specifies on which bottoms the backpropagation should be skipped.
+    // The size must be either 0 or equal to the number of bottoms.
+    repeated bool propagate_down = 11;
 
-  // Rules controlling whether and when a layer is included in the network,
-  // based on the current NetState.  You may specify a non-zero number of rules
-  // to include OR exclude, but not both.  If no include or exclude rules are
-  // specified, the layer is always included.  If the current NetState meets
-  // ANY (i.e., one or more) of the specified rules, the layer is
-  // included/excluded.
-  repeated NetStateRule include = 8;
-  repeated NetStateRule exclude = 9;
+    // Rules controlling whether and when a layer is included in the network,
+    // based on the current NetState.  You may specify a non-zero number of rules
+    // to include OR exclude, but not both.  If no include or exclude rules are
+    // specified, the layer is always included.  If the current NetState meets
+    // ANY (i.e., one or more) of the specified rules, the layer is
+    // included/excluded.
+    repeated NetStateRule include = 8;
+    repeated NetStateRule exclude = 9;
 
-  // Parameters for data pre-processing.
-  optional TransformationParameter transform_param = 100;
+    // Parameters for data pre-processing.
+    optional TransformationParameter transform_param = 100;
 
   // Parameters shared by loss layers.
   optional LossParameter loss_param = 101;
@@ -361,6 +424,7 @@ message LayerParameter {
   optional ContrastiveLossParameter contrastive_loss_param = 105;
   optional ConvolutionParameter convolution_param = 106;
   optional DataParameter data_param = 107;
+  optional DetectionOutputParameter detection_output_param = 204;
   optional DropoutParameter dropout_param = 108;
   optional DummyDataParameter dummy_data_param = 109;
   optional EltwiseParameter eltwise_param = 110;
@@ -377,10 +441,14 @@ message LayerParameter {
   optional LogParameter log_param = 134;
   optional LRNParameter lrn_param = 118;
   optional MemoryDataParameter memory_data_param = 119;
+  optional MultiBoxLossParameter multibox_loss_param = 201;
   optional MVNParameter mvn_param = 120;
+  optional NormalizeParameter norm_param = 206;
+  optional PermuteParameter permute_param = 202;
   optional PoolingParameter pooling_param = 121;
   optional PowerParameter power_param = 122;
   optional PReLUParameter prelu_param = 131;
+  optional PriorBoxParameter prior_box_param = 203;
   optional PythonParameter python_param = 130;
   optional ReductionParameter reduction_param = 136;
   optional ReLUParameter relu_param = 123;
@@ -398,6 +466,51 @@ message LayerParameter {
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
 }
+
+
+// Message that stores parameters used by data transformer for resize policy
+message ResizeParameter {
+    //Probability of using this resize policy
+    optional float prob = 1 [default = 1];
+
+    enum Resize_mode {
+        WARP = 1;
+        FIT_SMALL_SIZE = 2;
+        FIT_LARGE_SIZE_AND_PAD = 3;
+    }
+    optional Resize_mode resize_mode = 2 [default = WARP];
+    optional uint32 height = 3 [default = 0];
+    optional uint32 width = 4 [default = 0];
+    // A parameter used to update bbox in FIT_SMALL_SIZE mode.
+    optional uint32 height_scale = 8 [default = 0];
+    optional uint32 width_scale = 9 [default = 0];
+
+    enum Pad_mode {
+        CONSTANT = 1;
+        MIRRORED = 2;
+        REPEAT_NEAREST = 3;
+    }
+    // Padding mode for BE_SMALL_SIZE_AND_PAD mode and object
+    // centering
+    optional Pad_mode pad_mode = 5 [default = CONSTANT];
+    // if specified can be repeated once (would fill all the
+    // channels)
+    // or can be repeated the same number of times as
+    // channels
+    // (would use it them to the corresponding channel)
+    repeated float pad_value = 6;
+
+    enum Interp_mode { //Same as in OpenCV
+        LINEAR = 1;
+        AREA = 2;
+        NEAREST = 3;
+        CUBIC = 4;
+        LANCZOS4 = 5;
+    }
+    //interpolation for for resizing
+    repeated Interp_mode interp_mode = 7;
+}
+
 
 // Message that stores parameters used to apply transformation
 // to the data layer's data
@@ -420,6 +533,8 @@ message TransformationParameter {
   optional bool force_color = 6 [default = false];
   // Force the decoded image to have 1 color channels.
   optional bool force_gray = 7 [default = false];
+
+  optional EmitConstraint emit_constraint = 10;
 }
 
 // Message that stores parameters shared by loss layers
@@ -634,6 +749,82 @@ message DataParameter {
   optional uint32 prefetch = 10 [default = 4];
 }
 
+message NonMaximumSuppressionParameter {
+    // Threshold to be used in nms.
+    optional float nms_threshold = 1 [default = 0.3];
+    // Maximum number of results to be kept.
+    optional int32 top_k = 2;
+    // Parameter for adaptive nms.
+    optional float eta = 3 [default = 1.0];
+}
+
+message SaveOutputParameter {
+    // Output directory. If not empty, we will save the results.
+    optional string output_directory = 1;
+    // Output name prefix.
+    optional string output_name_prefix = 2;
+    // Output format.
+    //    VOC - PASCAL VOC output format.
+    //    COCO - MS COCO output format.
+    optional string output_format = 3;
+    // If you want to output results, must also provide the following
+    // two files.
+    // Otherwise, we will ignore saving results.
+    // label map file.
+    optional string label_map_file = 4;
+    // A file which contains a list of names and sizes with same order
+    // of the input DB. The file is in the following format:
+    //    name height width
+    //    ...
+    optional string name_size_file = 5;
+    // Number of test images. It can be less than the lines
+    // specified in
+    // name_size_file. For example, when we only want to evaluate on
+    // part
+    // of the test images.
+    optional uint32 num_test_image = 6;
+    // The resize parameter used in saving the data.
+    optional ResizeParameter resize_param = 7;
+}
+
+// Message that store parameters used by DetectionOutputLayer
+message DetectionOutputParameter {
+    // Number of classes to be predicted. Required!
+    optional uint32 num_classes = 1;
+    // If true, bounding box are shared among different classes.
+    optional bool share_location = 2 [default = true];
+    // Background label id. If there is no background class,
+    // set it as -1.
+    optional int32 background_label_id = 3 [default = 0];
+    // Parameters used for non maximum suppression.
+    optional NonMaximumSuppressionParameter nms_param = 4;
+    // Parameters used for saving detection results.
+    optional SaveOutputParameter save_output_param = 5;
+    // Type of coding method for bbox.
+    optional PriorBoxParameter.CodeType code_type = 6 [default =
+        CORNER];
+    // If true, variance is encoded in target; otherwise we need
+    // to adjust the
+    // predicted offset accordingly.
+    optional bool variance_encoded_in_target = 8 [default =
+        false];
+    // Number of total bboxes to be kept per image after nms
+    // step.
+    // -1 means keeping all bboxes after nms step.
+    optional int32 keep_top_k = 7 [default = -1];
+    // Only consider detections whose confidences are larger
+    // than a threshold.
+    // If not provided, consider all boxes.
+    optional float confidence_threshold = 9;
+    // If true, visualize the detection results.
+    optional bool visualize = 10 [default = false];
+    // The threshold used to visualize the detection
+    // results.
+    optional float visualize_threshold = 11;
+    // If provided, save outputs to video file.
+    optional string save_file = 12;
+}
+
 message DropoutParameter {
   optional float dropout_ratio = 1 [default = 0.5]; // dropout ratio
   optional bool scale_train = 2 [default = true];  // scale train or test phase
@@ -828,6 +1019,120 @@ message MemoryDataParameter {
   optional uint32 width = 4;
 }
 
+// Message that store parameters used by MultiBoxLossLayer
+message MultiBoxLossParameter {
+    // Localization loss type.
+    enum LocLossType {
+        L2 = 0;
+        SMOOTH_L1 = 1;
+    }
+    optional LocLossType loc_loss_type = 1 [default = SMOOTH_L1];
+    // Confidence loss type.
+    enum ConfLossType {
+        SOFTMAX = 0;
+        LOGISTIC = 1;
+    }
+    optional ConfLossType conf_loss_type = 2 [default = SOFTMAX];
+    // Weight for localization loss.
+    optional float loc_weight = 3 [default = 1.0];
+    // Number of classes to be predicted. Required!
+    optional uint32 num_classes = 4;
+    // If true, bounding box are shared among different classes.
+    optional bool share_location = 5 [default = true];
+    // Matching method during training.
+    enum MatchType {
+        BIPARTITE = 0;
+        PER_PREDICTION = 1;
+    }
+    optional MatchType match_type = 6 [default =
+        PER_PREDICTION];
+    // If match_type is PER_PREDICTION, use
+    // overlap_threshold to
+    // determine the extra matching bboxes.
+    optional float overlap_threshold = 7 [default = 0.5];
+    // Use prior for matching.
+    optional bool use_prior_for_matching = 8 [default =
+        true];
+    // Background label id.
+    optional uint32 background_label_id = 9 [default =
+        0];
+    // If true, also consider difficult ground truth.
+    optional bool use_difficult_gt = 10 [default =
+        true];
+    // If true, perform negative mining.
+    // DEPRECATED: use mining_type instead.
+    optional bool do_neg_mining = 11;
+    // The negative/positive ratio.
+    optional float neg_pos_ratio = 12 [default =
+        3.0];
+    // The negative overlap upperbound for the
+    // unmatched predictions.
+    optional float neg_overlap = 13 [default =
+        0.5];
+    // Type of coding method for bbox.
+    optional PriorBoxParameter.CodeType
+        code_type = 14 [default = CORNER];
+    // If true, encode the variance of prior
+    // box in the loc loss target instead of
+    // in bbox.
+    optional bool encode_variance_in_target
+        = 16 [default = false];
+    // If true, map all object classes to
+    // agnostic class. It is useful for
+    // learning
+    // objectness detector.
+    optional bool map_object_to_agnostic =
+        17 [default = false];
+    // If true, ignore cross boundary
+    // bbox during matching.
+    // Cross boundary bbox is a bbox who
+    // is outside of the image region.
+    optional bool
+        ignore_cross_boundary_bbox = 18
+        [default = false];
+    // If true, only backpropagate on
+    // corners which are inside of the
+    // image
+    // region when encode_type is
+    // CORNER or CORNER_SIZE.
+    optional bool bp_inside = 19
+        [default = false];
+    // Mining type during training.
+    //   NONE : use all negatives.
+    //   MAX_NEGATIVE : select
+    //   negatives based on the
+    //   score.
+    //   HARD_EXAMPLE : select hard
+    //   examples based on "Training
+    //   Region-based Object
+    //   Detectors with Online Hard
+    //   Example Mining",
+    //   Shrivastava et.al.
+    enum MiningType {
+        NONE = 0;
+        MAX_NEGATIVE = 1;
+        HARD_EXAMPLE =
+            2;
+    }
+    optional MiningType
+        mining_type = 20 [default
+        = MAX_NEGATIVE];
+    // Parameters used for non
+    // maximum suppression durig
+    // hard example mining.
+    optional
+        NonMaximumSuppressionParameter
+        nms_param = 21;
+    optional int32 sample_size
+        = 22 [default = 64];
+    optional bool
+        use_prior_for_nms =
+        23 [default =
+        false];
+}
+
+
+
 message MVNParameter {
   // This parameter can be set to false to normalize mean only
   optional bool normalize_variance = 1 [default = true];
@@ -837,6 +1142,24 @@ message MVNParameter {
 
   // Epsilon for not dividing by zero while normalizing variance
   optional float eps = 3 [default = 1e-9];
+}
+
+// Message that stores parameters used by NormalizeLayer
+message NormalizeParameter {
+    optional bool across_spatial = 1 [default = true];
+    // Initial value of scale. Default is 1.0 for all
+    optional FillerParameter scale_filler = 2;
+    // Whether or not scale parameters are shared across channels.
+    optional bool channel_shared = 3 [default = true];
+    // Epsilon for not dividing by zero while normalizing variance
+    optional float eps = 4 [default = 1e-10];
+}
+
+message PermuteParameter {
+    // The new orders of the axes of data. Notice it should be with
+    // in the same range as the input data, and it starts from 0.
+    // Do not provide repeated order.
+    repeated uint32 order = 1;
 }
 
 message PoolingParameter {
@@ -874,6 +1197,54 @@ message PowerParameter {
   optional float scale = 2 [default = 1.0];
   optional float shift = 3 [default = 0.0];
 }
+
+// Message that store parameters used by PriorBoxLayer
+message PriorBoxParameter {
+    // Encode/decode type.
+    enum CodeType {
+        CORNER = 1;
+        CENTER_SIZE = 2;
+        CORNER_SIZE = 3;
+    }
+    // Minimum box size (in pixels). Required!
+    repeated float min_size = 1;
+    // Maximum box size (in pixels). Required!
+    repeated float max_size = 2;
+    // Various of aspect ratios. Duplicate ratios will be ignored.
+    // If none is provided, we use default ratio 1.
+    repeated float aspect_ratio = 3;
+    // If true, will flip each aspect ratio.
+    // For example, if there is aspect ratio "r",
+    // we will generate aspect ratio "1.0/r" as well.
+    optional bool flip = 4 [default = true];
+    // If true, will clip the prior so that it is within [0, 1]
+    optional bool clip = 5 [default = false];
+    // Variance for adjusting the prior bboxes.
+    repeated float variance = 6;
+    // By default, we calculate img_height, img_width, step_x,
+    // step_y based on
+    // bottom[0] (feat) and bottom[1] (img). Unless these values
+    // are explicitely
+    // provided.
+    // Explicitly provide the img_size.
+    optional uint32 img_size = 7;
+    // Either img_size or img_h/img_w should be specified; not
+    // both.
+    optional uint32 img_h = 8;
+    optional uint32 img_w = 9;
+
+    // Explicitly provide the step size.
+    optional float step = 10;
+    // Either step or step_h/step_w should be specified;
+    // not both.
+    optional float step_h = 11;
+    optional float step_w = 12;
+
+    // Offset to the top left corner of each cell.
+    optional float offset = 13 [default = 0.5];
+}
+
+
 
 message PythonParameter {
   optional string module = 1;
