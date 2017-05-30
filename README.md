@@ -2,11 +2,12 @@
 
 &emsp;&emsp;Make the depth learning model run on Embedded Systems.
 
-# Target and Features
+# Features
 
 - Based on [caffe](https://github.com/BVLC/caffe)
 - Compact，Only forward calculation
-- Including the mainstream algorithm, like faster rcnn, ssd, and so on.
+- Support faster rcnn
+- Support ssd
 - Support GPU/CPU model
 - Cross-platform
 
@@ -51,18 +52,17 @@ $ make all -j
 
 ## Build demo
 
-## Build Errors?
+## Build Errors
 
 ```
-    1. error ‘type name’ declared as function returning an array escape
+1. error ‘type name’ declared as function returning an array escape
 
-    Make sure the CUDA version 7.5
+    Make sure the CUDA version is 7.5
 ```
 
-# TODO
+# TODO / Targets
 
 - Remove Backward calculation
-- Support ssd
 - Support windows system
 - Optimize the calculation
 - ......
