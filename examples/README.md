@@ -1,4 +1,4 @@
-# Build examepls
+# Build examples
 
 ```
 $ mkdir build
