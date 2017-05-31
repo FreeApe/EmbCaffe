@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
 
     gflags::SetUsageMessage("Do detection using SSD mode.\n"
             "Usage:\n"
-            "    ssd_detect [FLAGS] model_file weights_file list_file\n");
+            "    ssd_detect [model_file] [weights_file] [image/video_file]\n");
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     if (argc < 4) {
@@ -306,12 +306,18 @@ int main(int argc, char** argv) {
     std::ostream out(buf);
 
     // Process image one by one.
-    std::ifstream infile(argv[3]);
-    std::string file;
-    while (infile >> file) {
+    // std::ifstream infile(argv[3]);
+    // std::string file;
+    // while (infile >> file) {
+    while (1) {
         if (file_type == "image") {
-            cv::Mat img = cv::imread(file, -1);
-            CHECK(!img.empty()) << "Unable to decode image " << file;
+            // cv::Mat img = cv::imread(file, -1);
+            cv::Mat img = cv::imread(argv[3], -1);
+            if (img.empty()) {
+                fprintf(stderr, "Unable to decode image %s\n", argv[3]);
+                break;
+            }
+
             std::vector<vector<float> > detections = detector.Detect(img);
 
             /* Print the detection results. */
@@ -321,7 +327,7 @@ int main(int argc, char** argv) {
                 CHECK_EQ(d.size(), 7);
                 const float score = d[2];
                 if (score >= confidence_threshold) {
-                    out << file << " ";
+                    out << argv[3] << " ";
                     out << static_cast<int>(d[1]) << " ";
                     out << score << " ";
                     out << static_cast<int>(d[3] * img.cols) << " ";
@@ -330,17 +336,18 @@ int main(int argc, char** argv) {
                     out << static_cast<int>(d[6] * img.rows) << std::endl;
                 }
             }
+            break;
         } else if (file_type == "video") {
-            cv::VideoCapture cap(file);
+            cv::VideoCapture cap(argv[3]);
             if (!cap.isOpened()) {
-                LOG(FATAL) << "Failed to open video: " << file;
+                LOG(FATAL) << "Failed to open video: " << argv[3];
             }
             cv::Mat img;
             int frame_count = 0;
             while (true) {
                 bool success = cap.read(img);
                 if (!success) {
-                    LOG(INFO) << "Process " << frame_count << " frames from " << file;
+                    LOG(INFO) << "Process " << frame_count << " frames from " << argv[3];
                     break;
                 }
                 CHECK(!img.empty()) << "Error when read frame";
@@ -353,7 +360,7 @@ int main(int argc, char** argv) {
                     CHECK_EQ(d.size(), 7);
                     const float score = d[2];
                     if (score >= confidence_threshold) {
-                        out << file << "_";
+                        out << argv[3] << "_";
                         out << std::setfill('0') << std::setw(6) << frame_count << " ";
                         out << static_cast<int>(d[1]) << " ";
                         out << score << " ";

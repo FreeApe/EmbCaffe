@@ -33,6 +33,7 @@ cuDNN           : 5.0.5
 - Way 1
 
 ```bash
+# Note: Test examples with this way
 $ cd EmbCaffe
 $ mkdir cmake_build
 $ cd cmake_build

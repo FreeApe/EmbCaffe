@@ -1,1 +1,0 @@
-g++ demo_faster_rcnn_detect.cpp -I./include -I/usr/include/atlas -I/usr/local/cuda-8.0/include/ -L./lib -lcaffe -L/usr/local/cuda-8.0/lib64/ -lboost_system -lcublas -lcudart -lcurand -lglog -lopencv_core -lopencv_imgproc -lopencv_highgui -Wl,--no-as-needed

@@ -33,8 +33,8 @@ install(DIRECTORY ${Caffe_INCLUDE_DIR}/caffe DESTINATION include)
 install(FILES ${proto_hdrs} DESTINATION include/caffe/proto)
 install(TARGETS caffe proto EXPORT CaffeTargets DESTINATION lib)
 
-file(WRITE ${PROJECT_BINARY_DIR}/__init__.py)
-list(APPEND proto_python ${PROJECT_BINARY_DIR}/__init__.py)
-install(PROGRAMS ${proto_python} DESTINATION python/caffe/proto)
+#file(WRITE ${PROJECT_BINARY_DIR}/__init__.py)
+#list(APPEND proto_python ${PROJECT_BINARY_DIR}/__init__.py)
+#install(PROGRAMS ${proto_python} DESTINATION python/caffe/proto)
 
 

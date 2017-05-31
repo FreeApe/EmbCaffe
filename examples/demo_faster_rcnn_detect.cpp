@@ -16,7 +16,7 @@
 
 using std::string;
 using std::vector;
-using  std::max;
+using std::max;
 using std::min;
 
 using namespace std;
@@ -258,16 +258,19 @@ string num2str(float i){
 }
 
 int main(int argc,char **argv){
-    ::google::InitGoogleLogging(argv[0]);
+    if (4 != argc) {
+        fprintf(stderr, "[Usage]: %s [*.prototxt] [*.caffemodel] [image file]\n", argv[0]);
+        return -1;
+    }
 #ifdef CPU_ONLY
     cout<<"Use CPU\n";
 #else
     cout<<"Use GPU\n";
 #endif
 
-    ObjectDetector detect("test.prototxt","zf_faster_rcnn_iter_5000.caffemodel");
+    ObjectDetector detect(argv[1], argv[2]);
 
-    cv::Mat img=cv::imread("/home/yichengming/workspace/py-faster-rcnn/data/demo/n02802426_3755.JPEG");
+    cv::Mat img=cv::imread(argv[3]);
     map<int,vector<float> > score;
     map<int,vector<cv::Rect> > label_objs = detect.detect(img,&score);
 
@@ -281,7 +284,7 @@ int main(int argc,char **argv){
         }
     }
 
-    cv::imwrite("vis.jpg", img);
+    cv::imwrite("out.jpg", img);
     //imshow("", img);
     //waitKey();
     return 0;
