@@ -232,11 +232,9 @@ void Detector::Preprocess(const cv::Mat& img,
     cv::Mat sample_normalized;
     cv::subtract(sample_float, mean_, sample_normalized);
 
-    /* This operation will write the separate BGR
-     * planes directly to the
-     *    * input layer of the network because it
-     *    is wrapped by the cv::Mat
-     *       * objects in input_channels. */
+    /* This operation will write the separate BGR planes directly to the
+     * input layer of the network because it
+     * is wrapped by the cv::Mat objects in input_channels. */
     cv::split(sample_normalized, *input_channels);
 
     CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
@@ -249,7 +247,7 @@ static std::string FLAGS_mean_file = "";
 static std::string FLAGS_mean_value = "104,117,123";
 static std::string FLAGS_file_type = "image";
 static std::string FLAGS_out_file = "";
-static double FLAGS_confidence_threshold = 0.8f;
+static double FLAGS_confidence_threshold = 0.06f;
 
 //DEFINE_string(mean_file, "",
 //        "The mean file used to subtract from the input image.");
@@ -317,16 +315,22 @@ int main(int argc, char** argv) {
                 fprintf(stderr, "Unable to decode image %s\n", argv[3]);
                 break;
             }
-
+            __TIC__(detect);
             std::vector<vector<float> > detections = detector.Detect(img);
-
+            __TOC__(detect);
+            std::cout << "obj num = " << detections.size() << std::endl;
             /* Print the detection results. */
             for (int i = 0; i < detections.size(); ++i) {
                 const vector<float>& d = detections[i];
+                std::cout << "detections size = " << d.size() << " score = " << d[2]<< std::endl;
                 // Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
                 CHECK_EQ(d.size(), 7);
                 const float score = d[2];
                 if (score >= confidence_threshold) {
+                    int left_top_x = static_cast<int>(d[3] * img.cols);
+                    int left_top_y = static_cast<int>(d[4] * img.rows);
+                    int right_bottom_x = static_cast<int>(d[5] * img.cols);
+                    int right_bottom_y = static_cast<int>(d[6] * img.rows);
                     out << argv[3] << " ";
                     out << static_cast<int>(d[1]) << " ";
                     out << score << " ";
@@ -334,8 +338,13 @@ int main(int argc, char** argv) {
                     out << static_cast<int>(d[4] * img.rows) << " ";
                     out << static_cast<int>(d[5] * img.cols) << " ";
                     out << static_cast<int>(d[6] * img.rows) << std::endl;
+                    // retangle
+                    cv::Rect rect(left_top_x, left_top_y, right_bottom_x - left_top_x, right_bottom_y - left_top_y);
+                    cv::rectangle(img, rect, cv::Scalar(0,0,255),2);
                 }
             }
+
+            cv::imwrite("out.jpg", img);
             break;
         } else if (file_type == "video") {
             cv::VideoCapture cap(argv[3]);

@@ -17,5 +17,6 @@
 #include "caffe/util/benchmark.hpp"
 #include "caffe/util/io.hpp"
 #include "caffe/util/upgrade_proto.hpp"
+#include "caffe/ycm_defines.h"
 
 #endif  // CAFFE_CAFFE_HPP_

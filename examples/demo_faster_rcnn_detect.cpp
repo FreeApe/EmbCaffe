@@ -13,6 +13,7 @@
 #define INPUT_SIZE_NARROW  600
 #define INPUT_SIZE_LONG  1000
 
+#define CPU_ONLY
 
 using std::string;
 using std::vector;
@@ -111,6 +112,8 @@ class ObjectDetector
 
         ObjectDetector(const std::string &model_file, const std::string &weights_file);
         map<int,vector<cv::Rect> > detect(const cv::Mat& image, map<int,vector<float> >* score=NULL);
+        void preprocess(const vector<float> &data, const int blob_idx);
+        void preprocess(const cv::Mat &img_in, const int blob_idx);
 
     private:
         boost::shared_ptr< caffe::Net<float> > net_;
@@ -135,13 +138,39 @@ ObjectDetector::ObjectDetector(const std::string &model_file,const std::string &
        */
 }
 
-map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,vector<float> >* objectScore){
+void ObjectDetector::preprocess(const cv::Mat &img_in, const int blob_idx) {
+    const vector<Blob<float> *> &input_blobs = net_->input_blobs();
+    CHECK(img_in.isContinuous()) << "Warning : cv::Mat img_out is not Continuous !";
+    DLOG(ERROR) << "img_in (CHW) : " << img_in.channels() << ", " << img_in.rows << ", " << img_in.cols;
+    input_blobs[blob_idx]->Reshape(1, img_in.channels(), img_in.rows, img_in.cols);
+    float *blob_data = input_blobs[blob_idx]->mutable_cpu_data();
+    const int cols = img_in.cols;
+    const int rows = img_in.rows;
+    for (int i = 0; i < cols * rows; i++) {
+        blob_data[cols * rows * 0 + i] =
+            reinterpret_cast<float*>(img_in.data)[i * 3 + 0] ;// mean_[0];
+        blob_data[cols * rows * 1 + i] =
+            reinterpret_cast<float*>(img_in.data)[i * 3 + 1] ;// mean_[1];
+        blob_data[cols * rows * 2 + i] =
+            reinterpret_cast<float*>(img_in.data)[i * 3 + 2] ;// mean_[2];
+    }
+}
 
-    if(objectScore!=NULL)   //如果需要保存置信度
+void ObjectDetector::preprocess(const vector<float> &data, const int blob_idx) {
+    const vector<Blob<float> *> &input_blobs = net_->input_blobs();
+    input_blobs[blob_idx]->Reshape(1, data.size(), 1, 1);
+    float *blob_data = input_blobs[blob_idx]->mutable_cpu_data();
+    std::memcpy(blob_data, &data[0], sizeof(float) * data.size());
+}
+
+map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image, map<int,vector<float> >* objectScore){
+
+    if(objectScore != NULL) {
         objectScore->clear();
+    }
 
-    float CONF_THRESH = 0.8;  // score threshold
-    float NMS_THRESH = 0.3;   // nms threshold
+    float CONF_THRESH = 0.17f;      // score threshold
+    float NMS_THRESH = 0.29f;       // nms threshold
     int max_side = max(image.rows, image.cols);
     int min_side = min(image.rows, image.cols);
     float max_side_scale = float(max_side) / float(INPUT_SIZE_LONG);    // scale size
@@ -154,29 +183,42 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
 
     int num_out;
     cv::Mat cv_resized;
+    // do not recover the source image
     image.convertTo(cv_resized, CV_32FC3);
+    // resize by scale
     cv::resize(cv_resized, cv_resized, cv::Size(width, height));
     cv::Mat mean(height, width, cv_resized.type(), cv::Scalar(102.9801, 115.9465, 122.7717));
     cv::Mat normalized;
-    subtract(cv_resized, mean, normalized);
+    // sub mean value
+    cv::subtract(cv_resized, mean, normalized);
 
     float im_info[3];
     im_info[0] = height;
     im_info[1] = width;
     im_info[2] = img_scale;
     shared_ptr<Blob<float> > input_layer = net_->blob_by_name("data");
+    //const vector<Blob<float> *> &input_layer = net_->input_blobs();
+    cout << "normalized image (c h w) : " << normalized.channels() << " " << height << " " << width <<  " " << endl;
     input_layer->Reshape(1, normalized.channels(), height, width);
+    cout << "input_layer after Reshape (n,c,h,w) : " << input_layer->num() << " "
+            << input_layer->channels() << " " << input_layer->height() << " " << input_layer->width() << endl;
+    //input_layer[0]->Reshape(1, normalized.channels(), height, width);
     net_->Reshape();
     float* input_data = input_layer->mutable_cpu_data();
+    //float* input_data = input_layer[0]->mutable_cpu_data();
+    // input_channels save the B G R value of input_data
+    // Shallow copy
     vector<cv::Mat> input_channels;
     for (int i = 0; i < input_layer->channels(); ++i) {
+    //for (int i = 0; i < input_layer[0]->channels(); ++i) {
         cv::Mat channel(height, width, CV_32FC1, input_data);
         input_channels.push_back(channel);
         input_data += height * width;
     }
     cv::split(normalized, input_channels);
     net_->blob_by_name("im_info")->set_cpu_data(im_info);
-    net_->ForwardPrefilled();  // forward
+    //net_->ForwardPrefilled();  // forward
+    net_->ForwardTo(1);
 
 
     int num = net_->blob_by_name("rois")->num();  // numbers of ROI
@@ -241,7 +283,7 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
         }
         label_objs[i]=rect;
 
-        if(objectScore!=NULL){
+        if(objectScore != NULL){
             vector<float> tmp(aboxes.size());       // the score of class i
             for(int ii=0;ii<aboxes.size();++ii)
                 tmp[ii]=aboxes[ii].score;
@@ -258,6 +300,8 @@ string num2str(float i){
 }
 
 int main(int argc,char **argv){
+    ::google::InitGoogleLogging(argv[0]);
+    FLAGS_stderrthreshold = google::ERROR;
     if (4 != argc) {
         fprintf(stderr, "[Usage]: %s [*.prototxt] [*.caffemodel] [image file]\n", argv[0]);
         return -1;
@@ -272,19 +316,24 @@ int main(int argc,char **argv){
 
     cv::Mat img=cv::imread(argv[3]);
     map<int,vector<float> > score;
-    map<int,vector<cv::Rect> > label_objs = detect.detect(img,&score);
-
-    for(map<int,vector<cv::Rect> >::iterator it=label_objs.begin(); it != label_objs.end(); it++) {
-        int label=it->first;  // label
-        vector<cv::Rect> rects=it->second;  // detect box
-        for(int j=0;j<rects.size();j++) {
-            rectangle(img,rects[j],cv::Scalar(0,0,255),2);
-            string txt=num2str(label)+" : "+num2str(score[label][j]);
-            putText(img,txt,cv::Point(rects[j].x,rects[j].y),CV_FONT_HERSHEY_SIMPLEX,0.5,cv::Scalar(0,255,0));
+    map<int,vector<cv::Rect> > label_objs = detect.detect(img, &score);
+    map<int, vector<float> >::iterator it_s = score.begin();
+    cout << "class num = " << label_objs.size() << endl;
+    for(map<int,vector<cv::Rect> >::iterator it = label_objs.begin(); it != label_objs.end(); it++, it_s++) {
+        int label = it->first;                  // label or class
+        vector<cv::Rect> rects = it->second;    // detect box
+        vector<float> scores = it_s->second;    // scores
+        for(int j = 0; j < rects.size(); j++) {
+            cout << "score[" << j << "] : " << scores[j] << " ";
+            cout << "rect[" << j << "] = (" << rects[j].tl() << "," << rects[j].br() << ")" << endl;
+            cv::rectangle(img,rects[j],cv::Scalar(0,0,255),2);
+            string txt = num2str(label) + " : " + num2str(score[label][j]);
+            cv::putText(img, txt, cv::Point(rects[j].x, rects[j].y), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,255,0));
         }
     }
 
     cv::imwrite("out.jpg", img);
+    google::ShutdownGoogleLogging();
     //imshow("", img);
     //waitKey();
     return 0;

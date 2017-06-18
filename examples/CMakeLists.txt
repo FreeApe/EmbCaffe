@@ -7,6 +7,8 @@ project (
     VERSION 0.1.1
     )
 
+option (CPU_ONLY " " OFF)
+
 #-------------------------------------
 # Setting link directories for include files and library files
 #-------------------------------------

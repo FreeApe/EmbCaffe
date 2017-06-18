@@ -282,10 +282,10 @@ layer {
     ratio : 0.5
     ratio : 1
     ratio : 2
-    boxminsize :16
+    boxminsize :8
     per_nms_topn : 0;
     post_nms_topn : 0;
-    nms_thresh : 0.7
+    nms_thresh : 0.75
   }
 }
 
@@ -324,7 +324,7 @@ layer {
   bottom: "fc6"
   top: "fc6"
   dropout_param {
-    dropout_ratio: 0.5
+    dropout_ratio: 0.52
     scale_train: false
   }
 }

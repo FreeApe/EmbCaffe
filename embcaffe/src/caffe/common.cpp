@@ -53,7 +53,9 @@ void GlobalInit(int* pargc, char*** pargv) {
 
 Caffe::Caffe()
     : random_generator_(), mode_(Caffe::CPU),
-      solver_count_(1), root_solver_(true) { }
+      solver_count_(1), root_solver_(true) {
+        std::cout << "CPU_ONLY , Caffe::Caffe, root_solver is ture" << std::endl;
+      }
 
 Caffe::~Caffe() { }
 

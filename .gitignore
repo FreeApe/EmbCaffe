@@ -32,6 +32,7 @@
 
 # Editor temporaries
 *.swp
+*.swo
 *~
 
 # Sublime Text settings
@@ -50,6 +51,9 @@
 
 # OSX dir files
 .DS_Store
+
+# Image file
+*.jpg
 
 ## Caffe
 
