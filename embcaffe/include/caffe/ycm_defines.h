@@ -1,11 +1,12 @@
 #ifndef __YCM_DEFINES_H__
 #define __YCM_DEFINES_H__
 
-#include <sys/time.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#if defined(UNIX)
+#include <sys/time.h>
 
 #define YCM_PRT_ALERT                    1
 #define YCM_PRT_ERROR                    2
@@ -82,7 +83,13 @@ extern "C" {
             printf("\033[0;32m[OK] %s\033[0m\n", name);\
         }\
     }while(0)
+#else
 
+#define CHECK_RET(a, b) do{a;}while(0)
+#define __TIC__(a) do{}while(0)
+#define __TOC__(a) do{}while(0)
+
+#endif
 
 #ifdef __cplusplus
 }

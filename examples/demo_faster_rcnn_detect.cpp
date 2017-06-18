@@ -300,7 +300,9 @@ string num2str(float i){
 
 int main(int argc,char **argv){
     ::google::InitGoogleLogging(argv[0]);
+#ifdef UNIX
     FLAGS_stderrthreshold = google::ERROR;
+#endif
     if (4 != argc) {
         fprintf(stderr, "[Usage]: %s [*.prototxt] [*.caffemodel] [image file]\n", argv[0]);
         return -1;
