@@ -8,7 +8,7 @@
 - Compact，Only forward calculation
 - Support faster rcnn
 - Support ssd
-- Support GPU/CPU model
+- Support GPU/CPU model(Windows only support CPU model now)
 - Cross-platform
 - Small
 - Remove the gtest
@@ -17,22 +17,34 @@
 
 # Requirements
 
+## Linux
+
 ```
-System          : Linux / Ubuntu 14.04
-C++ compiler    : 4.8+
-BLAS            : Atlas
-Boost           : 1.54
-glog            : Y
-gflags          : Y
-protobuf        : 2.6.1
-CUDA            : 7.5
-cuDNN           : 5.0.5
-OpenCV          : N (for examples)
+System              : Linux / Ubuntu 14.04
+Cmake               : 3.4+
+C++ compiler        : 4.8+
+BLAS                : Atlas
+Boost               : 1.54
+glog                : Y
+gflags              : Y
+protobuf            : 2.6.1
+CUDA                : 7.5
+cuDNN               : 5.0.5
+OpenCV              : N (for examples)
 ```
+## Windows
+
+```
+System              : Windows
+Cmake-gui           : 3.8+
+C++ compiler        : vc140(VS2015)
+embcaffe_3rdparty   : https://github.com/FreeApe/embcaffe_3rdparty
+```
+
 
 # Build
 
-## Build EmbCaffe
+## Build EmbCaffe on Linux
 
 
 - Way 1
@@ -56,7 +68,20 @@ $ make all -j
 
 ```
 
+## Build EmbCaffe on Windows
+
+```
+1. with CMake-gui3.8+
+2. git clone https://github.com/FreeApe/embcaffe_3rdparty(You can also compile these third-party libraries yourself)
+2. Configure and Generate(You should configure CMAKE_INCLUDE_PATH and CMAKE_LIBRARY_PATH)
+3. Open Caffe.sln with VS2015
+4. build solutions
+```
+
+
 ## Build examples
+
+&emsp;&emsp;**Linux:**
 
 ```
 $ cd examples
@@ -64,7 +89,18 @@ $ mkdir build
 $ cd build
 $ cmake ..
 $ make -j
+``` 
+
+&emsp;&emsp;**Windows:**
+
 ```
+1. with CMake-gui3.8+
+2. Configure and Generate
+3. Open Caffe-example.sln with VS2015
+4. build solutions
+5. run demos
+```
+
 
 &emsp;&emsp;Running the examples, the results show as : 
 
@@ -84,7 +120,7 @@ $ make -j
 # TODO / Targets
 
 - Remove Backward calculation
-- Support windows system
+- Support GPU model on windows
 - Optimize the calculation
 - ......
 
