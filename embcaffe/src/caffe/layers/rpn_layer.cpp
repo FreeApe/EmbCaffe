@@ -474,10 +474,11 @@ namespace caffe {
             }
         }
     }
-
+/*
 #ifdef CPU_ONLY
         STUB_GPU(RPNLayer);
 #endif
+*/
 
     INSTANTIATE_CLASS(RPNLayer);
     REGISTER_LAYER_CLASS(RPN);

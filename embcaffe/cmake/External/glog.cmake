@@ -5,6 +5,7 @@ if (NOT __GLOG_INCLUDED)
   set(__GLOG_INCLUDED TRUE)
 
   # try the system-wide glog first
+  message(STATUS "Start find Glog")
   find_package(Glog)
   if (GLOG_FOUND)
       set(GLOG_EXTERNAL FALSE)

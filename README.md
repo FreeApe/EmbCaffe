@@ -10,6 +10,10 @@
 - Support ssd
 - Support GPU/CPU model
 - Cross-platform
+- Small
+- Remove the gtest
+- Remove the test
+- Remove the python wrapper
 
 # Requirements
 

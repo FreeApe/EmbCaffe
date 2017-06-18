@@ -7,33 +7,43 @@
 #  GFLAGS_FOUND
 #  GFLAGS_INCLUDE_DIRS
 #  GFLAGS_LIBRARIES
-#  GFLAGS_LIBRARYRARY_DIRS
+#  GFLAGS_LIBRARYRIES_DIRS
 
 include(FindPackageHandleStandardArgs)
 
 set(GFLAGS_ROOT_DIR "" CACHE PATH "Folder contains Gflags")
 
 # We are testing only a couple of files in the include directories
-if(WIN32)
+if(MSVC)	
     find_path(GFLAGS_INCLUDE_DIR gflags/gflags.h
-        PATHS ${GFLAGS_ROOT_DIR}/src/windows)
+        PATHS ${GFLAGS_ROOT_DIR}/include/)
 else()
     find_path(GFLAGS_INCLUDE_DIR gflags/gflags.h
         PATHS ${GFLAGS_ROOT_DIR})
 endif()
 
 if(MSVC)
-    find_library(GFLAGS_LIBRARY_RELEASE
-        NAMES libgflags
-        PATHS ${GFLAGS_ROOT_DIR}
-        PATH_SUFFIXES Release)
+    # find_library(GFLAGS_LIBRARY_RELEASE
+        # NAMES libgflags
+        # PATHS ${GFLAGS_ROOT_DIR}
+        # PATH_SUFFIXES )
 
-    find_library(GFLAGS_LIBRARY_DEBUG
-        NAMES libgflags-debug
-        PATHS ${GFLAGS_ROOT_DIR}
-        PATH_SUFFIXES Debug)
+    # find_library(GFLAGS_LIBRARY_DEBUG
+        # NAMES libgflags-debug
+        # PATHS ${GFLAGS_ROOT_DIR}
+        # PATH_SUFFIXES Debug)
+	if(WIN32)
+		FIND_LIBRARY(GFLAGS_LIBRARY NAMES gflags.lib libgflags.lib PATHS ${GFLAGS_ROOT_DIR} ${GFLAGS_ROOT_DIR}/win32)
+		get_filename_component(gflags_root_dir ${GFLAGS_INCLUDE_DIR} DIRECTORY)
+		message(STATUS "gflags_root_dir: ${gflags_root_dir}")
+		set(GFLAGS_LIBRARY ${GFLAGS_LIBRARY} "${gflags_root_dir}/lib/gflags_static.lib")
+		set(GFLAGS_LIBRARY ${GFLAGS_LIBRARY} "${gflags_root_dir}/lib/gflags_nothreads_static.lib" shlwapi.lib)
+	else()
+		FIND_LIBRARY(GFLAGS_LIBRARY NAMES gflags.lib libgflags.lib PATHS ${GFLAGS_ROOT_DIR} ${GFLAGS_ROOT_DIR}/x64)
+	endif()
+	
 
-    set(GFLAGS_LIBRARY optimized ${GFLAGS_LIBRARY_RELEASE} debug ${GFLAGS_LIBRARY_DEBUG})
+    #set(GFLAGS_LIBRARY optimized ${GFLAGS_LIBRARY_RELEASE} debug ${GFLAGS_LIBRARY_DEBUG})
 else()
     find_library(GFLAGS_LIBRARY gflags)
 endif()

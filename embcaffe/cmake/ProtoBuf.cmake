@@ -1,6 +1,18 @@
 # Finds Google Protocol Buffers library and compilers and extends
 # the standard cmake script with version and python generation support
 
+if(MSVC)
+    set(PROTOBUF_PROTOC_EXECUTABLE_DIR "" CACHE PATH "Only set it when PROTOBUF_PROTOC_EXECUTABLE environment varibale isn't defined")
+    if(NOT DEFINED ENV{PROTOBUF_PROTOC_EXECUTABLE_DIR})
+        message(STATUS "[OK] Not define the PROTOBUF_PROTOC_EXECUTABLE_DIR environment varibal, but manually set it up")
+        set(PROTOBUF_PROTOC_EXECUTABLE "${PROTOBUF_PROTOC_EXECUTABLE_DIR}/protoc.exe")
+    else()
+        message(STATUS "PROTOBUF_PROTOC_EXECUTABLE_DIR environment varibale: $ENV{PROTOBUF_PROTOC_EXECUTABLE_DIR}")
+        set(PROTOBUF_PROTOC_EXECUTABLE "$ENV{PROTOBUF_PROTOC_EXECUTABLE_DIR}/protoc.exe")		
+    endif()
+endif()
+
+
 find_package( Protobuf REQUIRED )
 include_directories(SYSTEM ${PROTOBUF_INCLUDE_DIR})
 list(APPEND Caffe_LINKER_LIBS ${PROTOBUF_LIBRARIES})
@@ -14,6 +26,7 @@ else()
 endif()
 
 if(PROTOBUF_FOUND)
+  mark_as_advanced(PROTOBUF_PROTOC_EXECUTABLE_DIR Protobuf_SRC_ROOT_FOLDER)
   # fetches protobuf version
   caffe_parse_header(${PROTOBUF_INCLUDE_DIR}/google/protobuf/stubs/common.h VERION_LINE GOOGLE_PROTOBUF_VERSION)
   string(REGEX MATCH "([0-9])00([0-9])00([0-9])" PROTOBUF_VERSION ${GOOGLE_PROTOBUF_VERSION})

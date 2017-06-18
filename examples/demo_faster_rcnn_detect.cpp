@@ -137,8 +137,9 @@ ObjectDetector::ObjectDetector(const std::string &model_file,const std::string &
 
 map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,vector<float> >* objectScore){
 
-    if(objectScore!=NULL)   //如果需要保存置信度
+    if(objectScore!=NULL) {   //如果需要保存置信度
         objectScore->clear();
+	}
 
     float CONF_THRESH = 0.8;  // score threshold
     float NMS_THRESH = 0.3;   // nms threshold
@@ -155,17 +156,22 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
     int num_out;
     cv::Mat cv_resized;
     image.convertTo(cv_resized, CV_32FC3);
+	
     cv::resize(cv_resized, cv_resized, cv::Size(width, height));
     cv::Mat mean(height, width, cv_resized.type(), cv::Scalar(102.9801, 115.9465, 122.7717));
     cv::Mat normalized;
     subtract(cv_resized, mean, normalized);
-
+	
+	
+	
     float im_info[3];
     im_info[0] = height;
     im_info[1] = width;
     im_info[2] = img_scale;
-    shared_ptr<Blob<float> > input_layer = net_->blob_by_name("data");
+	boost::shared_ptr<Blob<float> > input_layer = net_->blob_by_name("data");
+	cout << "normalized image (c h w) : " << normalized.channels() << " " << height << " " << width <<  " " << endl; 
     input_layer->Reshape(1, normalized.channels(), height, width);
+	cout << "input_layer after Reshape (n,c,h,w) : " << input_layer->num() << " " << input_layer->channels() << " " << input_layer->height() << " " << input_layer->width() << endl;
     net_->Reshape();
     float* input_data = input_layer->mutable_cpu_data();
     vector<cv::Mat> input_channels;
@@ -174,10 +180,14 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
         input_channels.push_back(channel);
         input_data += height * width;
     }
+	std::cout << "input_channels : " << input_channels.size() << endl;
+	std::cout << "start split" << endl;
     cv::split(normalized, input_channels);
     net_->blob_by_name("im_info")->set_cpu_data(im_info);
+	std::cout << "start ForwardPrefilled" << endl;
     net_->ForwardPrefilled();  // forward
-
+	//net_->ForwardTo(1);
+	std::cout << "end ForwardPrefilled" << endl;
 
     int num = net_->blob_by_name("rois")->num();  // numbers of ROI
     std::cout << "rois nums : " << num << endl;
@@ -193,8 +203,8 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
         rois_box.at<float>(i, 3) = rois_data[i * 5 + 4] / img_scale;
     }
 
-    shared_ptr<Blob<float> > bbox_delt_data = net_->blob_by_name("bbox_pred");   // 13949*84
-    shared_ptr<Blob<float> > score = net_->blob_by_name("cls_prob");             // 3949*21
+    boost::shared_ptr<Blob<float> > bbox_delt_data = net_->blob_by_name("bbox_pred");   // 13949*84
+    boost::shared_ptr<Blob<float> > score = net_->blob_by_name("cls_prob");             // 3949*21
 
     map<int,vector<cv::Rect> > label_objs;
     for (int i = 1; i < class_num_; ++i){
@@ -272,7 +282,8 @@ int main(int argc,char **argv){
 
     cv::Mat img=cv::imread(argv[3]);
     map<int,vector<float> > score;
-    map<int,vector<cv::Rect> > label_objs = detect.detect(img,&score);
+	std::cout << "start detect" << std::endl;
+    map<int,vector<cv::Rect> > label_objs = detect.detect(img, &score);
 
     for(map<int,vector<cv::Rect> >::iterator it=label_objs.begin(); it != label_objs.end(); it++) {
         int label=it->first;  // label

@@ -14,10 +14,32 @@ void caffe_cpu_gemm<float>(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
     const float alpha, const float* A, const float* B, const float beta,
     float* C) {
+	
   int lda = (TransA == CblasNoTrans) ? K : M;
   int ldb = (TransB == CblasNoTrans) ? N : K;
+  //147 138900 111 111 96 138900 1 0
+  /*
+  float *AA = new float[M*K]();
+  float *BB = new float[K*N]();
+
+  std::ifstream finA("A.txt");
+  for (int i = 0; i < M * K; i++) {
+	  finA >> AA[i];
+  }
+  finA.close();
+
+  std::ifstream finB("B.txt");
+  for (int i = 0; i < M * K; i++) {
+	  finB >> BB[i];
+  }
+  finB.close();
+  */
+
+  std::cout << "caffe_cpu_gemm float : " << lda << " " << ldb << " " << TransA << " " << TransB  << " "
+	  << M << " " << N << " " << alpha << " "<< beta << std::endl;
   cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B,
       ldb, beta, C, N);
+  std::cout << "caffe_cpu_gemm float  end clbas_sgemm: " << lda << " " << ldb << std::endl;
 }
 
 template<>
@@ -25,8 +47,10 @@ void caffe_cpu_gemm<double>(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
     const double alpha, const double* A, const double* B, const double beta,
     double* C) {
+	
   int lda = (TransA == CblasNoTrans) ? K : M;
   int ldb = (TransB == CblasNoTrans) ? N : K;
+  std::cout << "caffe_cpu_gemm double : " << lda << " " << ldb << std::endl;
   cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B,
       ldb, beta, C, N);
 }

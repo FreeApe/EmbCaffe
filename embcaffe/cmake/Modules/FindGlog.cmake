@@ -15,22 +15,27 @@ set(GLOG_ROOT_DIR "" CACHE PATH "Folder contains Google glog")
 
 if(WIN32)
     find_path(GLOG_INCLUDE_DIR glog/logging.h
-        PATHS ${GLOG_ROOT_DIR}/src/windows)
+        PATHS ${GLOG_ROOT_DIR}/include)
 else()
     find_path(GLOG_INCLUDE_DIR glog/logging.h
         PATHS ${GLOG_ROOT_DIR})
 endif()
 
 if(MSVC)
-    find_library(GLOG_LIBRARY_RELEASE libglog_static
-        PATHS ${GLOG_ROOT_DIR}
-        PATH_SUFFIXES Release)
+    # find_library(GLOG_LIBRARY_RELEASE libglog_static
+        # PATHS ${GLOG_ROOT_DIR}
+        # PATH_SUFFIXES Release)
 
-    find_library(GLOG_LIBRARY_DEBUG libglog_static
-        PATHS ${GLOG_ROOT_DIR}
-        PATH_SUFFIXES Debug)
-
-    set(GLOG_LIBRARY optimized ${GLOG_LIBRARY_RELEASE} debug ${GLOG_LIBRARY_DEBUG})
+    # find_library(GLOG_LIBRARY_DEBUG libglog_static
+        # PATHS ${GLOG_ROOT_DIR}
+        # PATH_SUFFIXES Debug)
+	if(WIN32)
+		FIND_LIBRARY(GLOG_LIBRARY NAMES glog.lib libglog.lib PATHS ${GLOG_ROOT_DIR} ${GLOG_ROOT_DIR}/win32)
+	else()
+		FIND_LIBRARY(GLOG_LIBRARY NAMES glog.lib libglog.lib PATHS ${GLOG_ROOT_DIR} ${GLOG_ROOT_DIR}/x64)
+	endif()
+	
+    #set(GLOG_LIBRARY optimized ${GLOG_LIBRARY_RELEASE} debug ${GLOG_LIBRARY_DEBUG})
 else()
     find_library(GLOG_LIBRARY glog
         PATHS ${GLOG_ROOT_DIR}

@@ -7,6 +7,11 @@
 #include "caffe/common.hpp"
 #include "caffe/util/rng.hpp"
 
+#if defined(_MSC_VER)
+#include <process.h>
+#define getpid() _getpid()
+#endif
+
 namespace caffe {
 
 // Make sure each thread can have different values.
@@ -34,6 +39,7 @@ int64_t cluster_seedgen(void) {
     fclose(f);
 
   pid = getpid();
+
   s = time(NULL);
   seed = std::abs(((s * 181) * ((pid - 83) * 359)) % 104729);
   return seed;
@@ -46,7 +52,10 @@ void GlobalInit(int* pargc, char*** pargv) {
   // Google logging.
   ::google::InitGoogleLogging(*(pargv)[0]);
   // Provide a backtrace on segfault.
+  // Windows port of glogs doesn't have this function built
+#if !defined(_MSC_VER)
   ::google::InstallFailureSignalHandler();
+#endif
 }
 
 #ifdef CPU_ONLY  // CPU-only Caffe.
