@@ -1,35 +1,60 @@
+IF(UNIX)
+    SET(Open_BLAS_INCLUDE_SEARCH_PATHS
+      /usr/include
+      /usr/include/openblas
+      /usr/include/openblas-base
+      /usr/local/include
+      /usr/local/include/openblas
+      /usr/local/include/openblas-base
+      /opt/OpenBLAS/include
+      $ENV{OpenBLAS_HOME}
+      $ENV{OpenBLAS_HOME}/include
+    )
 
+    SET(Open_BLAS_LIB_SEARCH_PATHS
+            /lib/
+            /lib/openblas-base
+            /lib64/
+            /usr/lib
+            /usr/lib/openblas-base
+            /usr/lib64
+            /usr/local/lib
+            /usr/local/lib64
+            /opt/OpenBLAS/lib
+            $ENV{OpenBLAS}cd
+            $ENV{OpenBLAS}/lib
+            $ENV{OpenBLAS_HOME}
+            $ENV{OpenBLAS_HOME}/lib
+     )
+ELSEIF(MSVC)
+    IF(NOT DEFINED $ENV{Open_BLAS_ROOT_DIR})
+        SET(Open_BLAS_ROOT_DIR CACHE PATH "Folder contains OpenBLAS")
+    ENDIF()
+    SET(Open_BLAS_INCLUDE_SEARCH_PATHS
+        ${Open_BLAS_ROOT_DIR}/include
+        ${Open_BLAS_ROOT_DIR}/include/openblas
+        ${Open_BLAS_ROOT_DIR}/include/openblas-base
+        $ENV{OpenBLAS_HOME}
+        $ENV{OpenBLAS_HOME}/include
+    )
 
-SET(Open_BLAS_INCLUDE_SEARCH_PATHS
-  /usr/include
-  /usr/include/openblas
-  /usr/include/openblas-base
-  /usr/local/include
-  /usr/local/include/openblas
-  /usr/local/include/openblas-base
-  /opt/OpenBLAS/include
-  $ENV{OpenBLAS_HOME}
-  $ENV{OpenBLAS_HOME}/include
-)
-
-SET(Open_BLAS_LIB_SEARCH_PATHS
-        /lib/
-        /lib/openblas-base
-        /lib64/
-        /usr/lib
-        /usr/lib/openblas-base
-        /usr/lib64
-        /usr/local/lib
-        /usr/local/lib64
-        /opt/OpenBLAS/lib
-        $ENV{OpenBLAS}cd
-        $ENV{OpenBLAS}/lib
+    SET(Open_BLAS_LIB_SEARCH_PATHS
+        ${Open_BLAS_ROOT_DIR}/lib/
         $ENV{OpenBLAS_HOME}
         $ENV{OpenBLAS_HOME}/lib
- )
+     )
+ELSE()
+    message(FATAL_ERROR "Do not support this platform\n")
+ENDIF()
 
 FIND_PATH(OpenBLAS_INCLUDE_DIR NAMES cblas.h PATHS ${Open_BLAS_INCLUDE_SEARCH_PATHS})
-FIND_LIBRARY(OpenBLAS_LIB NAMES openblas PATHS ${Open_BLAS_LIB_SEARCH_PATHS})
+IF(UNIX)
+    FIND_LIBRARY(OpenBLAS_LIB NAMES openblas PATHS ${Open_BLAS_LIB_SEARCH_PATHS})
+ELSEIF(MSVC)
+    FIND_LIBRARY(OpenBLAS_LIB NAMES libopenblas.lib libopenblas.dll PATHS ${Open_BLAS_LIB_SEARCH_PATHS})
+ELSE()
+    message(FATAL_ERROR "Do not support this platform\n")
+ENDIF()
 
 SET(OpenBLAS_FOUND ON)
 
@@ -57,6 +82,7 @@ ELSE (OpenBLAS_FOUND)
 ENDIF (OpenBLAS_FOUND)
 
 MARK_AS_ADVANCED(
+	Open_BLAS_ROOT_DIR	
     OpenBLAS_INCLUDE_DIR
     OpenBLAS_LIB
     OpenBLAS

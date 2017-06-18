@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 2.8.7)
-#if(POLICY CMP0046)
-#  cmake_policy(SET CMP0046 NEW)
-#endif()
-#if(POLICY CMP0054)
-#  cmake_policy(SET CMP0054 NEW)
-#endif()
+cmake_minimum_required(VERSION 3.4.0)
+
+# Run "cmake --help-policy CMP0054" for policy details.
+if(POLICY CMP0046)
+  cmake_policy(SET CMP0046 NEW)
+endif()
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 NEW)
+endif()
 
 # ---[ Caffe project
 project(Caffe C CXX)
@@ -26,10 +28,13 @@ include(cmake/Summary.cmake)
 include(cmake/ConfigGen.cmake)
 
 # ---[ Options
+if(MSVC)
+caffe_option(CPU_ONLY  "Build Caffe without CUDA support" ON) # TODO: rename to USE_CUDA
+else()
 caffe_option(CPU_ONLY  "Build Caffe without CUDA support" OFF) # TODO: rename to USE_CUDA
+endif()
 caffe_option(USE_CUDNN "Build Caffe with cuDNN library support" ON IF NOT CPU_ONLY)
 caffe_option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-caffe_option(BUILD_python "Build Python wrapper" OFF)
 caffe_option(USE_OPENCV "Build with OpenCV support" OFF)
 caffe_option(USE_LEVELDB "Build with levelDB" OFF)
 caffe_option(USE_LMDB "Build with lmdb" OFF)
@@ -48,7 +53,9 @@ if(USE_libstdcpp)
   message("-- Warning: forcing libstdc++ (controlled by USE_libstdcpp option in cmake)")
 endif()
 
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
+if(UNIX OR APPLE)
+	add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
+endif()
 
 # ---[ Warnings
 caffe_warnings_disable(CMAKE_CXX_FLAGS -Wno-sign-compare -Wno-uninitialized)
@@ -62,7 +69,7 @@ include_directories(${Caffe_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
 include_directories(BEFORE src) # This is needed for gtest.
 
 # ---[ Subdirectories
-add_subdirectory(src/gtest)
+#add_subdirectory(src/gtest)
 add_subdirectory(src/caffe)
 
 # ---[ Linter target

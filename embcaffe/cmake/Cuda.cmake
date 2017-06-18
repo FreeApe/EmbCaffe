@@ -171,13 +171,20 @@ function(detect_cuDNN)
   set(CUDNN_ROOT "" CACHE PATH "CUDNN root folder")
 
   find_path(CUDNN_INCLUDE cudnn.h
-            PATHS ${CUDNN_ROOT} $ENV{CUDNN_ROOT} ${CUDA_TOOLKIT_INCLUDE}
+      PATHS ${CUDNN_ROOT} $ENV{CUDNN_ROOT} ${CUDA_TOOLKIT_INCLUDE} ${CUDNN_ROOT}/include
             DOC "Path to cuDNN include directory." )
 
   get_filename_component(__libpath_hist ${CUDA_CUDART_LIBRARY} PATH)
-  find_library(CUDNN_LIBRARY NAMES libcudnn.so # libcudnn_static.a
+  if(UNIX)
+      find_library(CUDNN_LIBRARY NAMES libcudnn.so # libcudnn_static.a
                              PATHS ${CUDNN_ROOT} $ENV{CUDNN_ROOT} ${CUDNN_INCLUDE} ${__libpath_hist}
                              DOC "Path to cuDNN library.")
+  elseif(MSVC)
+      find_library(CUDNN_LIBRARY NAMES libcudnn.lib cudnn.lib
+          PATHS ${CUDNN_ROOT} $ENV{CUDNN_ROOT} ${CUDNN_INCLUDE} ${__libpath_hist} ${CUDNN_ROOT}/lib/x64 ${CUDNN_ROOT}/lib/
+                             ${CUDNN_ROOT}/lib/Win32 $ENV{CUDNN_ROOT}/lib $ENV{CUDNN_ROOT}/lib/x64
+                             DOC "Path to cuDNN library.")
+  endif()
 
   if(CUDNN_INCLUDE AND CUDNN_LIBRARY)
     set(HAVE_CUDNN  TRUE PARENT_SCOPE)

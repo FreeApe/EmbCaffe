@@ -196,7 +196,7 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image, map<int,
     im_info[0] = height;
     im_info[1] = width;
     im_info[2] = img_scale;
-    shared_ptr<Blob<float> > input_layer = net_->blob_by_name("data");
+    boost::shared_ptr<Blob<float> > input_layer = net_->blob_by_name("data");
     //const vector<Blob<float> *> &input_layer = net_->input_blobs();
     cout << "normalized image (c h w) : " << normalized.channels() << " " << height << " " << width <<  " " << endl;
     input_layer->Reshape(1, normalized.channels(), height, width);
@@ -215,12 +215,11 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image, map<int,
         input_channels.push_back(channel);
         input_data += height * width;
     }
+	std::cout << "input_channels : " << input_channels.size() << endl;
+	std::cout << "start split" << endl;
     cv::split(normalized, input_channels);
     net_->blob_by_name("im_info")->set_cpu_data(im_info);
-    //net_->ForwardPrefilled();  // forward
-    net_->ForwardTo(1);
-
-
+    net_->ForwardPrefilled();  // forward
     int num = net_->blob_by_name("rois")->num();  // numbers of ROI
     std::cout << "rois nums : " << num << endl;
     const float *rois_data = net_->blob_by_name("rois")->cpu_data();
@@ -235,8 +234,8 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image, map<int,
         rois_box.at<float>(i, 3) = rois_data[i * 5 + 4] / img_scale;
     }
 
-    shared_ptr<Blob<float> > bbox_delt_data = net_->blob_by_name("bbox_pred");   // 13949*84
-    shared_ptr<Blob<float> > score = net_->blob_by_name("cls_prob");             // 3949*21
+    boost::shared_ptr<Blob<float> > bbox_delt_data = net_->blob_by_name("bbox_pred");   // 13949*84
+    boost::shared_ptr<Blob<float> > score = net_->blob_by_name("cls_prob");             // 3949*21
 
     map<int,vector<cv::Rect> > label_objs;
     for (int i = 1; i < class_num_; ++i){

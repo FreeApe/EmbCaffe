@@ -33,7 +33,12 @@
 # Editor temporaries
 *.swp
 *.swo
+*.bak
 *~
+tmp
+tmp*
+temp
+temp*
 
 # Sublime Text settings
 *.sublime-workspace
@@ -80,6 +85,8 @@ embcaffe/.build_release/*
 *.bin
 cmake_build
 .cmake_build
+examples/build*
+embcaffe/build*
 
 # Generated documentation
 _site

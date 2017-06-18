@@ -1,12 +1,34 @@
+# - Try to find GFLAGS  
+#  
+# The following variables are optionally searched for defaults  
+#  GFLAGS_ROOT_DIR:            Base directory where all GFLAGS components are found  
+#  
+# The following are set after configuration is done:  
+#  GFLAGS_FOUND  
+#  GFLAGS_INCLUDE_DIRS  
+#  GFLAGS_LIBRARIES  
+#  GFLAGS_LIBRARY_DIRS 
+
+if(MSVC)
+    include(FindPackageHandleStandardArgs)  
+    set(GFLAGS_ROOT_DIR "" CACHE PATH "Folder contains Gflags")
+    find_path(GFLAGS_INCLUDE_DIR gflags/gflags.h
+                PATHS ${GFLAGS_ROOT_DIR}/include ${GFLAGS_ROOT_DIR}/include/gflags)
+
+endif()
+
+
 if (NOT __GFLAGS_INCLUDED) # guard against multiple includes
   set(__GFLAGS_INCLUDED TRUE)
 
+  message(STATUS "Start find GFlags")
   # use the system-wide gflags if present
   find_package(GFlags)
   if (GFLAGS_FOUND)
     set(GFLAGS_EXTERNAL FALSE)
   else()
     # gflags will use pthreads if it's available in the system, so we must link with it
+    message(STATUS "Start find Threads")
     find_package(Threads)
 
     # build directory

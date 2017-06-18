@@ -568,14 +568,12 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
   Dtype loss = 0;
   //if (debug_info_) {
   if (1) {
-    std::cout << "net_input_blobs_.size = " << net_input_blobs_.size() << std::endl;
     for (int i = 0; i < net_input_blobs_.size(); ++i) {
       InputDebugInfo(i);
     }
   }
   for (int i = start; i <= end; ++i) {
-    LOG(ERROR) << "Forwarding " << layer_names_[i];
-    std::cout << "bottom_vecs_i[" << i << "]" << bottom_vecs_[i][0]->shape_string() << " " << "top_vecs_ size = " << top_vecs_[i][0]->shape_string() << std::endl;
+    //LOG(ERROR) << "Forwarding " << layer_names_[i];
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
     loss += layer_loss;
     if (debug_info_) { ForwardDebugInfo(i); }

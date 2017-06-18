@@ -2,9 +2,41 @@
 set(Caffe_LINKER_LIBS "")
 
 # ---[ Boost
-find_package(Boost 1.46 REQUIRED COMPONENTS system thread filesystem)
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-list(APPEND Caffe_LINKER_LIBS ${Boost_LIBRARIES})
+set(BOOST_ROOT_DIR "" CACHE PATH "Only set it when BOOST_ROOT environment varibale isn't defined")
+
+if(NOT DEFINED ENV{BOOST_ROOT})
+    message(STATUS "Not define the BOOST_ROOT environment varibal")
+    set(BOOST_ROOT "${BOOST_ROOT_DIR}")
+else()
+    message(STATUS "BOOST_ROOT environment varibale: $ENV{BOOST_ROOT}")
+	set(BOOST_ROOT "$ENV{BOOST_ROOT}")
+endif()
+message(STATUS "Boost_ROOT ${Boost_ROOT}")
+if(NOT MSVC)
+	find_package(Boost 1.46 REQUIRED COMPONENTS system thread filesystem)
+else()
+	find_package(Boost 1.64.0)
+endif()
+
+if(Boost_FOUND)
+	mark_as_advanced(BOOST_ROOT_DIR BOOST_ROOT)
+    message(STATUS "Boost_INCLUDE_DIRS : ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost_LIBRARY_DIRS : ${Boost_LIBRARY_DIRS}")	    
+	if(MSVC)
+		#unset(Boost_LIBRARIES CACHE)
+		set(Boost_LIBRARIES
+			"${Boost_LIBRARY_DIRS}/libboost_system-vc140-mt-1_64.lib"
+			"${Boost_LIBRARY_DIRS}/libboost_thread-vc140-mt-1_64.lib"
+			"${Boost_LIBRARY_DIRS}/libboost_filesystem-vc140-mt-1_64.lib"	
+			)
+	endif()
+	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
+    include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+	link_directories(SYSTEM ${Boost_LIBRARY_DIRS})
+    list(APPEND Caffe_LINKER_LIBS ${Boost_LIBRARIES})
+else()
+	message(WARNING "Boost not found")
+endif(Boost_FOUND)
 
 # ---[ Threads
 find_package(Threads REQUIRED)
@@ -24,9 +56,28 @@ list(APPEND Caffe_LINKER_LIBS ${GFLAGS_LIBRARIES})
 include(cmake/ProtoBuf.cmake)
 
 # ---[ HDF5
+if(NOT DEFINED ENV{HDF5_ROOT})
+	set(HDF5_ROOT CACHE PATH "")
+    message(STATUS "Not define the HDF5_ROOT environment varibal")
+    set(HDF5_DIR "${HDF5_ROOT}")
+else()
+    message(STATUS "HDF5_ROOT environment varibale: $ENV{BOOST_ROOT}")
+	set(HDF5_DIR "ENV{HDF5_ROOT}")
+endif()
+
+#find_package(HDF5 COMPONENTS HL REQUIRED)
 find_package(HDF5 COMPONENTS HL REQUIRED)
-include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
-list(APPEND Caffe_LINKER_LIBS ${HDF5_LIBRARIES})
+if(HDF5_FOUND)
+  mark_as_advanced(HDF5_DIR)
+  include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
+  if(MSVC)
+	set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${HDF5_ROOT}/lib/hdf5_hl.lib)
+  endif()
+  message(STATUS "HDF5_LIBRARIES: ${HDF5_LIBRARIES}")
+  list(APPEND Caffe_LINKER_LIBS ${HDF5_LIBRARIES})
+else()
+  message(WARNING "HDF5 not found")
+endif()
 
 # ---[ LMDB
 if(USE_LMDB)
@@ -80,9 +131,14 @@ if(USE_OPENCV)
 endif()
 
 # ---[ BLAS
-if(NOT APPLE)
-  set(BLAS "Atlas" CACHE STRING "Selected BLAS library")
+if(NOT APPLE)  
+  if(MSVC)
+	set(BLAS "Open" CACHE STRING "Selected BLAS library")	
+  else()
+	set(BLAS "Atlas" CACHE STRING "Selected BLAS library")	
+  endif()
   set_property(CACHE BLAS PROPERTY STRINGS "Atlas;Open;MKL")
+  
   message(STATUS "BLAS is : ${BLAS}")
   if(BLAS STREQUAL "Atlas" OR BLAS STREQUAL "atlas")
     find_package(Atlas REQUIRED)

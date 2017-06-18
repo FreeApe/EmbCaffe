@@ -1,4 +1,20 @@
 ################################################################################################
+# To solve the error LNK2001/ error LNK2019, build static library
+# http://www.cnblogs.com/youxin/p/4896540.html
+if(MSVC)
+add_definitions(-DGLEW_STATIC)
+add_definitions(-DFREEGLUT_STATIC)
+add_definitions(-DGOOGLE_GLOG_DLL_DECL=)
+add_definitions(-DGLOG_NO_ABBREVIATED_SEVERITIES)
+remove_definitions(-D_HDF5USEDLL_)
+remove_definitions(-DH5_BUILT_AS_DYNAMIC_LIB)
+#add_definitions(-GOOGLE_GLOG_DLL_DECL=)
+#add_definitions(-DGLOG_NO_ABBREVIATED_SEVERITIES)
+#add_definitions(-DGLEW_STATIC)
+#add_definitions(-DFREEGLUT_STATIC)
+endif()
+
+################################################################################################
 # Defines global Caffe_LINK flag, This flag is required to prevent linker from excluding
 # some objects which are not addressed directly but are registered via static constructors
 if(BUILD_SHARED_LIBS)
@@ -62,26 +78,26 @@ function(caffe_pickup_caffe_sources root)
   caffe_source_group("Source\\Proto"  GLOB "${root}/src/caffe/proto/*.proto")
 
   # source groups for test target
-  caffe_source_group("Include"      GLOB "${root}/include/caffe/test/test_*.h*")
-  caffe_source_group("Source"       GLOB "${root}/src/caffe/test/test_*.cpp")
-  caffe_source_group("Source\\Cuda" GLOB "${root}/src/caffe/test/test_*.cu")
+  #caffe_source_group("Include"      GLOB "${root}/include/caffe/test/test_*.h*")
+  #caffe_source_group("Source"       GLOB "${root}/src/caffe/test/test_*.cpp")
+  #caffe_source_group("Source\\Cuda" GLOB "${root}/src/caffe/test/test_*.cu")
 
   # collect files
-  file(GLOB test_hdrs    ${root}/include/caffe/test/test_*.h*)
-  file(GLOB test_srcs    ${root}/src/caffe/test/test_*.cpp)
+  #file(GLOB test_hdrs    ${root}/include/caffe/test/test_*.h*)
+  #file(GLOB test_srcs    ${root}/src/caffe/test/test_*.cpp)
   file(GLOB_RECURSE hdrs ${root}/include/caffe/*.h*)
   file(GLOB_RECURSE srcs ${root}/src/caffe/*.cpp)
-  list(REMOVE_ITEM  hdrs ${test_hdrs})
-  list(REMOVE_ITEM  srcs ${test_srcs})
+  #list(REMOVE_ITEM  hdrs ${test_hdrs})
+  #list(REMOVE_ITEM  srcs ${test_srcs})
 
   # adding headers to make the visible in some IDEs (Qt, VS, Xcode)
   list(APPEND srcs ${hdrs} ${PROJECT_BINARY_DIR}/caffe_config.h)
-  list(APPEND test_srcs ${test_hdrs})
+  #list(APPEND test_srcs ${test_hdrs})
 
   # collect cuda files
-  file(GLOB    test_cuda ${root}/src/caffe/test/test_*.cu)
+  #file(GLOB    test_cuda ${root}/src/caffe/test/test_*.cu)
   file(GLOB_RECURSE cuda ${root}/src/caffe/*.cu)
-  list(REMOVE_ITEM  cuda ${test_cuda})
+  #list(REMOVE_ITEM  cuda ${test_cuda})
 
   # add proto to make them editable in IDEs too
   file(GLOB_RECURSE proto_files ${root}/src/caffe/*.proto)
@@ -90,14 +106,14 @@ function(caffe_pickup_caffe_sources root)
   # convet to absolute paths
   caffe_convert_absolute_paths(srcs)
   caffe_convert_absolute_paths(cuda)
-  caffe_convert_absolute_paths(test_srcs)
-  caffe_convert_absolute_paths(test_cuda)
+  #caffe_convert_absolute_paths(test_srcs)
+  #caffe_convert_absolute_paths(test_cuda)
 
   # propogate to parent scope
   set(srcs ${srcs} PARENT_SCOPE)
   set(cuda ${cuda} PARENT_SCOPE)
-  set(test_srcs ${test_srcs} PARENT_SCOPE)
-  set(test_cuda ${test_cuda} PARENT_SCOPE)
+  #set(test_srcs ${test_srcs} PARENT_SCOPE)
+  #set(test_cuda ${test_cuda} PARENT_SCOPE)
 endfunction()
 
 ################################################################################################

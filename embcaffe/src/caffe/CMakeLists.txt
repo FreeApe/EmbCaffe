@@ -18,6 +18,7 @@ if(HAVE_CUDA)
 endif()
 
 add_library(caffe ${srcs})
+message(STATUS "Caffe_LINKER_LIBS: ${Caffe_LINKER_LIBS}")
 target_link_libraries(caffe proto ${Caffe_LINKER_LIBS})
 caffe_default_properties(caffe)
 set_target_properties(caffe PROPERTIES
@@ -26,7 +27,7 @@ set_target_properties(caffe PROPERTIES
     )
 
 # ---[ Tests
- add_subdirectory(test)
+#add_subdirectory(test)
 
 # ---[ Install
 install(DIRECTORY ${Caffe_INCLUDE_DIR}/caffe DESTINATION include)
