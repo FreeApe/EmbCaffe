@@ -12,7 +12,6 @@ if(MSVC)
     endif()
 endif()
 
-
 find_package( Protobuf REQUIRED )
 include_directories(SYSTEM ${PROTOBUF_INCLUDE_DIR})
 list(APPEND Caffe_LINKER_LIBS ${PROTOBUF_LIBRARIES})

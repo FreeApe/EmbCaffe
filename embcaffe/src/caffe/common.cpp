@@ -39,7 +39,6 @@ int64_t cluster_seedgen(void) {
     fclose(f);
 
   pid = getpid();
-
   s = time(NULL);
   seed = std::abs(((s * 181) * ((pid - 83) * 359)) % 104729);
   return seed;

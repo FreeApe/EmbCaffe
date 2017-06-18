@@ -156,14 +156,10 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
     int num_out;
     cv::Mat cv_resized;
     image.convertTo(cv_resized, CV_32FC3);
-	
     cv::resize(cv_resized, cv_resized, cv::Size(width, height));
     cv::Mat mean(height, width, cv_resized.type(), cv::Scalar(102.9801, 115.9465, 122.7717));
     cv::Mat normalized;
     subtract(cv_resized, mean, normalized);
-	
-	
-	
     float im_info[3];
     im_info[0] = height;
     im_info[1] = width;
@@ -188,7 +184,6 @@ map<int,vector<cv::Rect> > ObjectDetector::detect(const cv::Mat& image,map<int,v
     net_->ForwardPrefilled();  // forward
 	//net_->ForwardTo(1);
 	std::cout << "end ForwardPrefilled" << endl;
-
     int num = net_->blob_by_name("rois")->num();  // numbers of ROI
     std::cout << "rois nums : " << num << endl;
     const float *rois_data = net_->blob_by_name("rois")->cpu_data();

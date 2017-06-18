@@ -79,7 +79,6 @@ else()
   message(WARNING "HDF5 not found")
 endif()
 
-
 # ---[ LMDB
 if(USE_LMDB)
   find_package(LMDB REQUIRED)
