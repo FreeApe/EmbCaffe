@@ -2,6 +2,7 @@
 
 #include "caffe/util/im2col.hpp"
 #include "caffe/util/math_functions.hpp"
+#include "caffe/ycm_defines.h"
 
 namespace caffe {
 
@@ -16,7 +17,7 @@ inline bool is_a_ge_zero_and_a_lt_b(int a, int b) {
 }
 
 template <typename Dtype>
-void im2col_cpu(const Dtype* data_im, const int channels,
+void EmbCaffeDllExport im2col_cpu(const Dtype* data_im, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w,
     const int stride_h, const int stride_w,
@@ -55,12 +56,12 @@ void im2col_cpu(const Dtype* data_im, const int channels,
 }
 
 // Explicit instantiation
-template void im2col_cpu<float>(const float* data_im, const int channels,
+template EmbCaffeDllExport void im2col_cpu<float>(const float* data_im, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
     float* data_col);
-template void im2col_cpu<double>(const double* data_im, const int channels,
+template EmbCaffeDllExport void im2col_cpu<double>(const double* data_im, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
@@ -138,7 +139,7 @@ inline void im2col_nd_core_cpu(const Dtype* data_input, const bool im2col,
 }
 
 template <typename Dtype>
-void im2col_nd_cpu(const Dtype* data_im, const int num_spatial_axes,
+EmbCaffeDllExport void im2col_nd_cpu(const Dtype* data_im, const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, Dtype* data_col) {
@@ -148,19 +149,19 @@ void im2col_nd_cpu(const Dtype* data_im, const int num_spatial_axes,
 }
 
 // Explicit instantiation
-template void im2col_nd_cpu<float>(const float* data_im,
+template EmbCaffeDllExport void im2col_nd_cpu<float>(const float* data_im,
     const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, float* data_col);
-template void im2col_nd_cpu<double>(const double* data_im,
+template EmbCaffeDllExport void im2col_nd_cpu<double>(const double* data_im,
     const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, double* data_col);
 
 template <typename Dtype>
-void col2im_cpu(const Dtype* data_col, const int channels,
+void EmbCaffeDllExport col2im_cpu(const Dtype* data_col, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w,
     const int stride_h, const int stride_w,
@@ -197,19 +198,19 @@ void col2im_cpu(const Dtype* data_col, const int channels,
 }
 
 // Explicit instantiation
-template void col2im_cpu<float>(const float* data_col, const int channels,
+template EmbCaffeDllExport void col2im_cpu<float>(const float* data_col, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
     float* data_im);
-template void col2im_cpu<double>(const double* data_col, const int channels,
+template EmbCaffeDllExport void col2im_cpu<double>(const double* data_col, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
     double* data_im);
 
 template <typename Dtype>
-void col2im_nd_cpu(const Dtype* data_col, const int num_spatial_axes,
+void EmbCaffeDllExport col2im_nd_cpu(const Dtype* data_col, const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, Dtype* data_im) {
@@ -219,12 +220,12 @@ void col2im_nd_cpu(const Dtype* data_col, const int num_spatial_axes,
 }
 
 // Explicit instantiation
-template void col2im_nd_cpu<float>(const float* data_col,
+template EmbCaffeDllExport void col2im_nd_cpu<float>(const float* data_col,
     const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, float* data_im);
-template void col2im_nd_cpu<double>(const double* data_col,
+template EmbCaffeDllExport void col2im_nd_cpu<double>(const double* data_col,
     const int num_spatial_axes,
     const int* im_shape, const int* col_shape,
     const int* kernel_shape, const int* pad, const int* stride,

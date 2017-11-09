@@ -13,6 +13,7 @@
 #include "caffe/solver.hpp"
 #include "caffe/syncedmem.hpp"
 #include "caffe/util/blocking_queue.hpp"
+#include "caffe/ycm_defines.h"
 
 namespace caffe {
 
@@ -20,7 +21,7 @@ namespace caffe {
 // be replaced by ones from Params, to allow parallelization. Params ensures
 // parameters are allocated in one consecutive array.
 template<typename Dtype>
-class Params {
+class EmbCaffeDllExport Params {
  public:
   explicit Params(shared_ptr<Solver<Dtype> > root_solver);
   virtual ~Params() {

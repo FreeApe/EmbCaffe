@@ -5,6 +5,14 @@
 extern "C" {
 #endif
 
+#if _MSC_VER
+#if defined(MSVC_DLL_EXPORT)
+#define EmbCaffeDllExport __declspec(dllexport)
+#else 
+#define EmbCaffeDllExport  
+#endif
+#endif
+
 #if defined(UNIX)
 #include <sys/time.h>
 

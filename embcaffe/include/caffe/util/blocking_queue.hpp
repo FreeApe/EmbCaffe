@@ -7,7 +7,7 @@
 namespace caffe {
 
 template<typename T>
-class BlockingQueue {
+class EmbCaffeDllExport BlockingQueue {
  public:
   explicit BlockingQueue();
 

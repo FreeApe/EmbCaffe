@@ -3,10 +3,11 @@
 
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/solver.hpp"
+#include "caffe/ycm_defines.h"
 
 namespace caffe {
 
-class SignalHandler {
+class EmbCaffeDllExport SignalHandler {
  public:
   // Contructor. Specify what action to take when a signal is received.
   SignalHandler(SolverAction::Enum SIGINT_action,

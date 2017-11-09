@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "caffe/util/device_alternate.hpp"
+#include "ycm_defines.h"
 
 // Convert macro to string
 #define STRINGIFY(m) #m
@@ -99,7 +100,7 @@ void GlobalInit(int* pargc, char*** pargv);
 
 // A singleton class to hold common caffe stuff, such as the handler that
 // caffe is going to use for cublas, curand, etc.
-class Caffe {
+class EmbCaffeDllExport Caffe {
  public:
   ~Caffe();
 
@@ -112,7 +113,7 @@ class Caffe {
 
   // This random number generator facade hides boost and CUDA rng
   // implementation from one another (for cross-platform compatibility).
-  class RNG {
+  class EmbCaffeDllExport RNG {
    public:
     RNG();
     explicit RNG(unsigned int seed);

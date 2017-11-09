@@ -1,4 +1,5 @@
 #include "caffe/util/hdf5.hpp"
+#include "caffe/ycm_defines.h"
 
 #include <string>
 #include <vector>
@@ -7,7 +8,7 @@ namespace caffe {
 
 // Verifies format of data stored in HDF5 file and reshapes blob accordingly.
 template <typename Dtype>
-void hdf5_load_nd_dataset_helper(
+EmbCaffeDllExport void hdf5_load_nd_dataset_helper(
     hid_t file_id, const char* dataset_name_, int min_dim, int max_dim,
     Blob<Dtype>* blob) {
   // Verify that the dataset exists.
@@ -89,7 +90,7 @@ void hdf5_load_nd_dataset_helper(
 }
 
 template <>
-void hdf5_load_nd_dataset<float>(hid_t file_id, const char* dataset_name_,
+EmbCaffeDllExport void hdf5_load_nd_dataset<float>(hid_t file_id, const char* dataset_name_,
         int min_dim, int max_dim, Blob<float>* blob) {
   hdf5_load_nd_dataset_helper(file_id, dataset_name_, min_dim, max_dim, blob);
   herr_t status = H5LTread_dataset_float(
@@ -98,7 +99,7 @@ void hdf5_load_nd_dataset<float>(hid_t file_id, const char* dataset_name_,
 }
 
 template <>
-void hdf5_load_nd_dataset<double>(hid_t file_id, const char* dataset_name_,
+EmbCaffeDllExport void hdf5_load_nd_dataset<double>(hid_t file_id, const char* dataset_name_,
         int min_dim, int max_dim, Blob<double>* blob) {
   hdf5_load_nd_dataset_helper(file_id, dataset_name_, min_dim, max_dim, blob);
   herr_t status = H5LTread_dataset_double(
@@ -107,7 +108,7 @@ void hdf5_load_nd_dataset<double>(hid_t file_id, const char* dataset_name_,
 }
 
 template <>
-void hdf5_save_nd_dataset<float>(
+EmbCaffeDllExport void hdf5_save_nd_dataset<float>(
     const hid_t file_id, const string& dataset_name, const Blob<float>& blob,
     bool write_diff) {
   int num_axes = blob.num_axes();
@@ -128,7 +129,7 @@ void hdf5_save_nd_dataset<float>(
 }
 
 template <>
-void hdf5_save_nd_dataset<double>(
+EmbCaffeDllExport void hdf5_save_nd_dataset<double>(
     hid_t file_id, const string& dataset_name, const Blob<double>& blob,
     bool write_diff) {
   int num_axes = blob.num_axes();

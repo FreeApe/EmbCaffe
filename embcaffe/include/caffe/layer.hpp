@@ -10,6 +10,7 @@
 #include "caffe/layer_factory.hpp"
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/math_functions.hpp"
+#include "caffe/ycm_defines.h"
 
 /**
  Forward declare boost::thread instead of including boost/thread.hpp
@@ -30,7 +31,7 @@ namespace caffe {
  * their output Blob%s.
  */
 template <typename Dtype>
-class Layer {
+class EmbCaffeDllExport Layer {
  public:
   /**
    * You should not implement your own constructor. Any set up code should go

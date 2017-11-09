@@ -5,6 +5,7 @@
 
 #include "caffe/common.hpp"
 #include "caffe/proto/caffe.pb.h"
+#include "caffe/ycm_defines.h"
 
 namespace caffe { namespace db {
 
@@ -33,7 +34,7 @@ class Transaction {
   DISABLE_COPY_AND_ASSIGN(Transaction);
 };
 
-class DB {
+class EmbCaffeDllExport DB {
  public:
   DB() { }
   virtual ~DB() { }
@@ -45,8 +46,8 @@ class DB {
   DISABLE_COPY_AND_ASSIGN(DB);
 };
 
-DB* GetDB(DataParameter::DB backend);
-DB* GetDB(const string& backend);
+EmbCaffeDllExport DB* GetDB(DataParameter::DB backend);
+EmbCaffeDllExport DB* GetDB(const string& backend);
 
 }  // namespace db
 }  // namespace caffe

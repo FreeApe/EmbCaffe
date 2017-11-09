@@ -6,6 +6,7 @@
 
 #include "caffe/net.hpp"
 #include "caffe/solver_factory.hpp"
+#include "caffe/ycm_defines.h"
 
 namespace caffe {
 
@@ -38,7 +39,7 @@ typedef boost::function<SolverAction::Enum()> ActionCallback;
  * given the current state of the Net parameters.
  */
 template <typename Dtype>
-class Solver {
+class EmbCaffeDllExport Solver {
  public:
   explicit Solver(const SolverParameter& param,
       const Solver* root_solver = NULL);

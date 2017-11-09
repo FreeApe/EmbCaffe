@@ -9,6 +9,8 @@
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/syncedmem.hpp"
 
+#include "ycm_defines.h"
+
 const int kMaxBlobAxes = 32;
 
 namespace caffe {
@@ -21,7 +23,7 @@ namespace caffe {
  * TODO(dox): more thorough description.
  */
 template <typename Dtype>
-class Blob {
+class EmbCaffeDllExport Blob {
  public:
   Blob()
        : data_(), diff_(), count_(0), capacity_(0) {}

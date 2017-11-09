@@ -375,6 +375,7 @@ void DetectionOutputLayer<Dtype>::Forward_cpu(
         top_data[count * 7 + 5] = bbox.xmax();
         top_data[count * 7 + 6] = bbox.ymax();
         if (need_save_) {
+		  /*YICM
           NormalizedBBox out_bbox;
           OutputBBox(bbox, sizes_[name_count_], has_resize_, resize_param_,
                      &out_bbox);
@@ -406,11 +407,13 @@ void DetectionOutputLayer<Dtype>::Forward_cpu(
           cur_det.put<float>("score", score);
 
           detections_.push_back(std::make_pair("", cur_det));
+		  */
         }
         ++count;
       }
     }
     if (need_save_) {
+	  /* YICM
       ++name_count_;
       if (name_count_ % num_test_image_ == 0) {
         if (output_format_ == "VOC") {
@@ -495,7 +498,7 @@ void DetectionOutputLayer<Dtype>::Forward_cpu(
         }
         name_count_ = 0;
         detections_.clear();
-      }
+      }*/
     }
   }
   if (visualize_) {

@@ -11,6 +11,7 @@
 #include "caffe/common.hpp"
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/format.hpp"
+#include "caffe/ycm_defines.h"
 
 #ifndef CAFFE_TMP_DIR_RETRIES
 #define CAFFE_TMP_DIR_RETRIES 100
@@ -49,9 +50,9 @@ inline void MakeTempFilename(string* temp_filename) {
     (temp_files_subpath/caffe::format_int(next_temp_file++, 9)).string();
 }
 
-bool ReadProtoFromTextFile(const char* filename, Message* proto);
+EmbCaffeDllExport bool ReadProtoFromTextFile(const char* filename, Message* proto);
 
-inline bool ReadProtoFromTextFile(const string& filename, Message* proto) {
+inline EmbCaffeDllExport bool ReadProtoFromTextFile(const string& filename, Message* proto) {
   return ReadProtoFromTextFile(filename.c_str(), proto);
 }
 
@@ -68,7 +69,7 @@ inline void WriteProtoToTextFile(const Message& proto, const string& filename) {
   WriteProtoToTextFile(proto, filename.c_str());
 }
 
-bool ReadProtoFromBinaryFile(const char* filename, Message* proto);
+EmbCaffeDllExport bool ReadProtoFromBinaryFile(const char* filename, Message* proto);
 
 inline bool ReadProtoFromBinaryFile(const string& filename, Message* proto) {
   return ReadProtoFromBinaryFile(filename.c_str(), proto);
@@ -161,18 +162,18 @@ inline bool MapNameToLabel(const LabelMap& map,
     return MapNameToLabel(map, true, name_to_label);
 }
 
-bool MapLabelToName(const LabelMap& map, const bool strict_check,
+EmbCaffeDllExport bool MapLabelToName(const LabelMap& map, const bool strict_check,
         std::map<int, string>* label_to_name);
 
-inline bool MapLabelToName(const LabelMap& map,
+inline EmbCaffeDllExport bool MapLabelToName(const LabelMap& map,
         std::map<int, string>* label_to_name) {
     return MapLabelToName(map, true, label_to_name);
 }
 
-bool MapLabelToDisplayName(const LabelMap& map, const bool strict_check,
+EmbCaffeDllExport bool MapLabelToDisplayName(const LabelMap& map, const bool strict_check,
         std::map<int, string>* label_to_display_name);
 
-inline bool MapLabelToDisplayName(const LabelMap& map,
+inline EmbCaffeDllExport bool MapLabelToDisplayName(const LabelMap& map,
         std::map<int, string>* label_to_display_name) {
     return MapLabelToDisplayName(map, true, label_to_display_name);
 }

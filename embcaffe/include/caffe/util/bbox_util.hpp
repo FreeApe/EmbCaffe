@@ -35,6 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <opencv2/imgproc/imgproc.hpp>
 #endif  // USE_OPENCV
 
+#include "caffe/ycm_defines.h"
+
 #ifndef CAFFE_UTIL_BBOX_UTIL_H_
 #define CAFFE_UTIL_BBOX_UTIL_H_
 
@@ -77,7 +79,7 @@ bool SortScorePairAscend(const pair<float, T>& pair1,
 // Function sued to sort pair<float, T>, stored in STL container (e.g. vector)
 // in descend order based on the score (first) value.
 template <typename T>
-bool SortScorePairDescend(const pair<float, T>& pair1,
+EmbCaffeDllExport bool SortScorePairDescend(const pair<float, T>& pair1,
                           const pair<float, T>& pair2);
 
 // Generate unit bbox [0, 0, 1, 1]
@@ -108,7 +110,7 @@ void ScaleBBox(const NormalizedBBox& bbox, const int height, const int width,
                NormalizedBBox* scale_bbox);
 
 // Output predicted bbox on the actual image.
-void OutputBBox(const NormalizedBBox& bbox, const pair<int, int>& img_size,
+EmbCaffeDllExport void OutputBBox(const NormalizedBBox& bbox, const pair<int, int>& img_size,
                 const bool has_resize, const ResizeParameter& resize_param,
                 NormalizedBBox* out_bbox);
 
@@ -159,7 +161,7 @@ void DecodeBBoxes(const vector<NormalizedBBox>& prior_bboxes,
     vector<NormalizedBBox>* decode_bboxes);
 
 // Decode all bboxes in a batch.
-void DecodeBBoxesAll(const vector<LabelBBox>& all_loc_pred,
+EmbCaffeDllExport void DecodeBBoxesAll(const vector<LabelBBox>& all_loc_pred,
     const vector<NormalizedBBox>& prior_bboxes,
     const vector<vector<float> >& prior_variances,
     const int num, const bool share_location,
@@ -183,7 +185,7 @@ void MatchBBox(const vector<NormalizedBBox>& gt,
 //    multibox_loss_param: stores the parameters for MultiBoxLossLayer.
 //    all_match_overlaps: stores jaccard overlaps between predictions and gt.
 //    all_match_indices: stores mapping between predictions and ground truth.
-void FindMatches(const vector<LabelBBox>& all_loc_preds,
+EmbCaffeDllExport void FindMatches(const vector<LabelBBox>& all_loc_preds,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       const vector<NormalizedBBox>& prior_bboxes,
       const vector<vector<float> >& prior_variances,
@@ -207,7 +209,7 @@ int CountNumMatches(const vector<map<int, vector<int> > >& all_match_indices,
 //    all_match_indices: stores mapping between predictions and ground truth.
 //    all_loc_loss: stores the confidence loss per location for each image.
 template <typename Dtype>
-void MineHardExamples(const Blob<Dtype>& conf_blob,
+EmbCaffeDllExport void MineHardExamples(const Blob<Dtype>& conf_blob,
     const vector<LabelBBox>& all_loc_preds,
     const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
     const vector<NormalizedBBox>& prior_bboxes,
@@ -226,12 +228,12 @@ void MineHardExamples(const Blob<Dtype>& conf_blob,
 //    all_gt_bboxes: stores ground truth for each image. Label of each bbox is
 //      stored in NormalizedBBox.
 template <typename Dtype>
-void GetGroundTruth(const Dtype* gt_data, const int num_gt,
+EmbCaffeDllExport void GetGroundTruth(const Dtype* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, vector<NormalizedBBox> >* all_gt_bboxes);
 // Store ground truth bboxes of same label in a group.
 template <typename Dtype>
-void GetGroundTruth(const Dtype* gt_data, const int num_gt,
+EmbCaffeDllExport void GetGroundTruth(const Dtype* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, LabelBBox>* all_gt_bboxes);
 
@@ -245,7 +247,7 @@ void GetGroundTruth(const Dtype* gt_data, const int num_gt,
 //    loc_preds: stores the location prediction, where each item contains
 //      location prediction for an image.
 template <typename Dtype>
-void GetLocPredictions(const Dtype* loc_data, const int num,
+EmbCaffeDllExport void GetLocPredictions(const Dtype* loc_data, const int num,
       const int num_preds_per_class, const int num_loc_classes,
       const bool share_location, vector<LabelBBox>* loc_preds);
 
@@ -260,7 +262,7 @@ void GetLocPredictions(const Dtype* loc_data, const int num,
 //    loc_pred_data: stores the location prediction results.
 //    loc_gt_data: stores the encoded location ground truth.
 template <typename Dtype>
-void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
+EmbCaffeDllExport void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<NormalizedBBox>& prior_bboxes,
@@ -290,7 +292,7 @@ void ComputeLocLoss(const Blob<Dtype>& loc_pred, const Blob<Dtype>& loc_gt,
 //    conf_preds: stores the confidence prediction, where each item contains
 //      confidence prediction for an image.
 template <typename Dtype>
-void GetConfidenceScores(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void GetConfidenceScores(const Dtype* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       vector<map<int, vector<float> > >* conf_scores);
 
@@ -305,7 +307,7 @@ void GetConfidenceScores(const Dtype* conf_data, const int num,
 //    conf_preds: stores the confidence prediction, where each item contains
 //      confidence prediction for an image.
 template <typename Dtype>
-void GetConfidenceScores(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void GetConfidenceScores(const Dtype* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       const bool class_major, vector<map<int, vector<float> > >* conf_scores);
 
@@ -354,7 +356,7 @@ void ComputeConfLoss(const Dtype* conf_data, const int num,
 //    conf_pred_data: stores the confidence prediction results.
 //    conf_gt_data: stores the confidence ground truth.
 template <typename Dtype>
-void EncodeConfPrediction(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void EncodeConfPrediction(const Dtype* conf_data, const int num,
       const int num_priors, const MultiBoxLossParameter& multibox_loss_param,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<vector<int> >& all_neg_indices,
@@ -367,7 +369,7 @@ void EncodeConfPrediction(const Dtype* conf_data, const int num,
 //    prior_bboxes: stores all the prior bboxes in the format of NormalizedBBox.
 //    prior_variances: stores all the variances needed by prior bboxes.
 template <typename Dtype>
-void GetPriorBBoxes(const Dtype* prior_data, const int num_priors,
+EmbCaffeDllExport void GetPriorBBoxes(const Dtype* prior_data, const int num_priors,
       vector<NormalizedBBox>* prior_bboxes,
       vector<vector<float> >* prior_variances);
 
@@ -445,7 +447,7 @@ void ApplyNMS(const bool* overlapped, const int num, vector<int>* indices);
 //    eta: adaptation rate for nms threshold (see Piotr's paper).
 //    top_k: if not -1, keep at most top_k picked indices.
 //    indices: the kept indices of bboxes after nms.
-void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
+EmbCaffeDllExport void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
       const vector<float>& scores, const float score_threshold,
       const float nms_threshold, const float eta, const int top_k,
       vector<int>* indices);
@@ -462,7 +464,7 @@ void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
 //    top_k: if not -1, keep at most top_k picked indices.
 //    indices: the kept indices of bboxes after nms.
 template <typename Dtype>
-void ApplyNMSFast(const Dtype* bboxes, const Dtype* scores, const int num,
+EmbCaffeDllExport void ApplyNMSFast(const Dtype* bboxes, const Dtype* scores, const int num,
       const float score_threshold, const float nms_threshold,
       const float eta, const int top_k, vector<int>* indices);
 

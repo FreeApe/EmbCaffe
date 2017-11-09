@@ -40,6 +40,12 @@ caffe_option(USE_LEVELDB "Build with levelDB" OFF)
 caffe_option(USE_LMDB "Build with lmdb" OFF)
 caffe_option(ALLOW_LMDB_NOLOCK "Allow MDB_NOLOCK when reading LMDB files (only if necessary)" OFF)
 
+if(BUILD_SHARED_LIBS)
+    if(MSVC)
+        add_definitions(-DMSVC_DLL_EXPORT)
+    endif()
+endif()
+
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
 

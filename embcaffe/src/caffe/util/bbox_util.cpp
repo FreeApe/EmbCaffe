@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "boost/iterator/counting_iterator.hpp"
 
 #include "caffe/util/bbox_util.hpp"
+#include "caffe/ycm_defines.h"
 
 namespace caffe {
 
@@ -72,9 +73,9 @@ bool SortScorePairDescend(const pair<float, T>& pair1,
 }
 
 // Explicit initialization.
-template bool SortScorePairDescend(const pair<float, int>& pair1,
+template EmbCaffeDllExport bool SortScorePairDescend(const pair<float, int>& pair1,
                                    const pair<float, int>& pair2);
-template bool SortScorePairDescend(const pair<float, pair<int, int> >& pair1,
+template EmbCaffeDllExport bool SortScorePairDescend(const pair<float, pair<int, int> >& pair1,
                                    const pair<float, pair<int, int> >& pair2);
 
 NormalizedBBox UnitBBox() {
@@ -183,7 +184,7 @@ void ScaleBBox(const NormalizedBBox& bbox, const int height, const int width,
   scale_bbox->set_difficult(bbox.difficult());
 }
 
-void OutputBBox(const NormalizedBBox& bbox, const pair<int, int>& img_size,
+EmbCaffeDllExport void OutputBBox(const NormalizedBBox& bbox, const pair<int, int>& img_size,
                 const bool has_resize, const ResizeParameter& resize_param,
                 NormalizedBBox* out_bbox) {
   const int height = img_size.first;
@@ -879,7 +880,7 @@ inline bool IsEligibleMining(const MiningType mining_type, const int match_idx,
 }
 
 template <typename Dtype>
-void MineHardExamples(const Blob<Dtype>& conf_blob,
+EmbCaffeDllExport void MineHardExamples(const Blob<Dtype>& conf_blob,
     const vector<LabelBBox>& all_loc_preds,
     const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
     const vector<NormalizedBBox>& prior_bboxes,
@@ -1062,7 +1063,7 @@ void MineHardExamples(const Blob<Dtype>& conf_blob,
 }
 
 // Explicite initialization.
-template void MineHardExamples(const Blob<float>& conf_blob,
+template EmbCaffeDllExport void MineHardExamples(const Blob<float>& conf_blob,
     const vector<LabelBBox>& all_loc_preds,
     const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
     const vector<NormalizedBBox>& prior_bboxes,
@@ -1072,7 +1073,7 @@ template void MineHardExamples(const Blob<float>& conf_blob,
     int* num_matches, int* num_negs,
     vector<map<int, vector<int> > >* all_match_indices,
     vector<vector<int> >* all_neg_indices);
-template void MineHardExamples(const Blob<double>& conf_blob,
+template EmbCaffeDllExport void MineHardExamples(const Blob<double>& conf_blob,
     const vector<LabelBBox>& all_loc_preds,
     const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
     const vector<NormalizedBBox>& prior_bboxes,
@@ -1084,7 +1085,7 @@ template void MineHardExamples(const Blob<double>& conf_blob,
     vector<vector<int> >* all_neg_indices);
 
 template <typename Dtype>
-void GetGroundTruth(const Dtype* gt_data, const int num_gt,
+EmbCaffeDllExport void GetGroundTruth(const Dtype* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, vector<NormalizedBBox> >* all_gt_bboxes) {
   all_gt_bboxes->clear();
@@ -1116,15 +1117,15 @@ void GetGroundTruth(const Dtype* gt_data, const int num_gt,
 }
 
 // Explicit initialization.
-template void GetGroundTruth(const float* gt_data, const int num_gt,
+template EmbCaffeDllExport void GetGroundTruth(const float* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, vector<NormalizedBBox> >* all_gt_bboxes);
-template void GetGroundTruth(const double* gt_data, const int num_gt,
+template EmbCaffeDllExport void GetGroundTruth(const double* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, vector<NormalizedBBox> >* all_gt_bboxes);
 
 template <typename Dtype>
-void GetGroundTruth(const Dtype* gt_data, const int num_gt,
+EmbCaffeDllExport void GetGroundTruth(const Dtype* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, LabelBBox>* all_gt_bboxes) {
   all_gt_bboxes->clear();
@@ -1155,15 +1156,15 @@ void GetGroundTruth(const Dtype* gt_data, const int num_gt,
 }
 
 // Explicit initialization.
-template void GetGroundTruth(const float* gt_data, const int num_gt,
+template EmbCaffeDllExport void GetGroundTruth(const float* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, LabelBBox>* all_gt_bboxes);
-template void GetGroundTruth(const double* gt_data, const int num_gt,
+template EmbCaffeDllExport void GetGroundTruth(const double* gt_data, const int num_gt,
       const int background_label_id, const bool use_difficult_gt,
       map<int, LabelBBox>* all_gt_bboxes);
 
 template <typename Dtype>
-void GetLocPredictions(const Dtype* loc_data, const int num,
+EmbCaffeDllExport void GetLocPredictions(const Dtype* loc_data, const int num,
       const int num_preds_per_class, const int num_loc_classes,
       const bool share_location, vector<LabelBBox>* loc_preds) {
   loc_preds->clear();
@@ -1191,15 +1192,15 @@ void GetLocPredictions(const Dtype* loc_data, const int num,
 }
 
 // Explicit initialization.
-template void GetLocPredictions(const float* loc_data, const int num,
+template EmbCaffeDllExport void GetLocPredictions(const float* loc_data, const int num,
       const int num_preds_per_class, const int num_loc_classes,
       const bool share_location, vector<LabelBBox>* loc_preds);
-template void GetLocPredictions(const double* loc_data, const int num,
+template EmbCaffeDllExport void GetLocPredictions(const double* loc_data, const int num,
       const int num_preds_per_class, const int num_loc_classes,
       const bool share_location, vector<LabelBBox>* loc_preds);
 
 template <typename Dtype>
-void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
+EmbCaffeDllExport void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<NormalizedBBox>& prior_bboxes,
@@ -1286,14 +1287,14 @@ void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
 }
 
 // Explicit initialization.
-template void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
+template EmbCaffeDllExport void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<NormalizedBBox>& prior_bboxes,
       const vector<vector<float> >& prior_variances,
       const MultiBoxLossParameter& multibox_loss_param,
       float* loc_pred_data, float* loc_gt_data);
-template void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
+template EmbCaffeDllExport void EncodeLocPrediction(const vector<LabelBBox>& all_loc_preds,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<NormalizedBBox>& prior_bboxes,
@@ -1366,7 +1367,7 @@ template void ComputeLocLoss(const Blob<double>& loc_pred,
       vector<vector<float> >* all_loc_loss);
 
 template <typename Dtype>
-void GetConfidenceScores(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void GetConfidenceScores(const Dtype* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       vector<map<int, vector<float> > >* conf_preds) {
   conf_preds->clear();
@@ -1384,15 +1385,15 @@ void GetConfidenceScores(const Dtype* conf_data, const int num,
 }
 
 // Explicit initialization.
-template void GetConfidenceScores(const float* conf_data, const int num,
+template EmbCaffeDllExport void GetConfidenceScores(const float* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       vector<map<int, vector<float> > >* conf_preds);
-template void GetConfidenceScores(const double* conf_data, const int num,
+template EmbCaffeDllExport void GetConfidenceScores(const double* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       vector<map<int, vector<float> > >* conf_preds);
 
 template <typename Dtype>
-void GetConfidenceScores(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void GetConfidenceScores(const Dtype* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       const bool class_major, vector<map<int, vector<float> > >* conf_preds) {
   conf_preds->clear();
@@ -1417,10 +1418,10 @@ void GetConfidenceScores(const Dtype* conf_data, const int num,
 }
 
 // Explicit initialization.
-template void GetConfidenceScores(const float* conf_data, const int num,
+template EmbCaffeDllExport void GetConfidenceScores(const float* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       const bool class_major, vector<map<int, vector<float> > >* conf_preds);
-template void GetConfidenceScores(const double* conf_data, const int num,
+template EmbCaffeDllExport void GetConfidenceScores(const double* conf_data, const int num,
       const int num_preds_per_class, const int num_classes,
       const bool class_major, vector<map<int, vector<float> > >* conf_preds);
 
@@ -1570,7 +1571,7 @@ template void ComputeConfLoss(const double* conf_data, const int num,
       vector<vector<float> >* all_conf_loss);
 
 template <typename Dtype>
-void EncodeConfPrediction(const Dtype* conf_data, const int num,
+EmbCaffeDllExport void EncodeConfPrediction(const Dtype* conf_data, const int num,
       const int num_priors, const MultiBoxLossParameter& multibox_loss_param,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<vector<int> >& all_neg_indices,
@@ -1671,13 +1672,13 @@ void EncodeConfPrediction(const Dtype* conf_data, const int num,
 }
 
 // Explicite initialization.
-template void EncodeConfPrediction(const float* conf_data, const int num,
+template EmbCaffeDllExport void EncodeConfPrediction(const float* conf_data, const int num,
       const int num_priors, const MultiBoxLossParameter& multibox_loss_param,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<vector<int> >& all_neg_indices,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       float* conf_pred_data, float* conf_gt_data);
-template void EncodeConfPrediction(const double* conf_data, const int num,
+template EmbCaffeDllExport void EncodeConfPrediction(const double* conf_data, const int num,
       const int num_priors, const MultiBoxLossParameter& multibox_loss_param,
       const vector<map<int, vector<int> > >& all_match_indices,
       const vector<vector<int> >& all_neg_indices,
@@ -1685,7 +1686,7 @@ template void EncodeConfPrediction(const double* conf_data, const int num,
       double* conf_pred_data, double* conf_gt_data);
 
 template <typename Dtype>
-void GetPriorBBoxes(const Dtype* prior_data, const int num_priors,
+EmbCaffeDllExport void GetPriorBBoxes(const Dtype* prior_data, const int num_priors,
       vector<NormalizedBBox>* prior_bboxes,
       vector<vector<float> >* prior_variances) {
   prior_bboxes->clear();
@@ -1713,10 +1714,10 @@ void GetPriorBBoxes(const Dtype* prior_data, const int num_priors,
 }
 
 // Explicit initialization.
-template void GetPriorBBoxes(const float* prior_data, const int num_priors,
+template EmbCaffeDllExport void GetPriorBBoxes(const float* prior_data, const int num_priors,
       vector<NormalizedBBox>* prior_bboxes,
       vector<vector<float> >* prior_variances);
-template void GetPriorBBoxes(const double* prior_data, const int num_priors,
+template EmbCaffeDllExport void GetPriorBBoxes(const double* prior_data, const int num_priors,
       vector<NormalizedBBox>* prior_bboxes,
       vector<vector<float> >* prior_variances);
 
@@ -1931,7 +1932,7 @@ inline int clamp(const int v, const int a, const int b) {
   return v < a ? a : v > b ? b : v;
 }
 
-void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
+EmbCaffeDllExport void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
       const vector<float>& scores, const float score_threshold,
       const float nms_threshold, const float eta, const int top_k,
       vector<int>* indices) {
@@ -1969,7 +1970,7 @@ void ApplyNMSFast(const vector<NormalizedBBox>& bboxes,
 }
 
 template <typename Dtype>
-void ApplyNMSFast(const Dtype* bboxes, const Dtype* scores, const int num,
+EmbCaffeDllExport void ApplyNMSFast(const Dtype* bboxes, const Dtype* scores, const int num,
       const float score_threshold, const float nms_threshold,
       const float eta, const int top_k, vector<int>* indices) {
   // Get top_k scores (with corresponding indices).
@@ -2002,11 +2003,11 @@ void ApplyNMSFast(const Dtype* bboxes, const Dtype* scores, const int num,
 }
 
 template
-void ApplyNMSFast(const float* bboxes, const float* scores, const int num,
+EmbCaffeDllExport void ApplyNMSFast(const float* bboxes, const float* scores, const int num,
       const float score_threshold, const float nms_threshold,
       const float eta, const int top_k, vector<int>* indices);
 template
-void ApplyNMSFast(const double* bboxes, const double* scores, const int num,
+EmbCaffeDllExport void ApplyNMSFast(const double* bboxes, const double* scores, const int num,
       const float score_threshold, const float nms_threshold,
       const float eta, const int top_k, vector<int>* indices);
 

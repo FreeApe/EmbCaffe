@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "caffe/common.hpp"
+#include "ycm_defines.h"
 
 namespace caffe {
 
@@ -42,7 +43,7 @@ inline void CaffeFreeHost(void* ptr, bool use_cuda) {
  *
  * TODO(dox): more thorough description.
  */
-class SyncedMemory {
+class EmbCaffeDllExport SyncedMemory {
  public:
   SyncedMemory()
       : cpu_ptr_(NULL), gpu_ptr_(NULL), size_(0), head_(UNINITIALIZED),

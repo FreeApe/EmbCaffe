@@ -42,7 +42,7 @@ using google::protobuf::io::ZeroCopyOutputStream;
 using google::protobuf::io::CodedOutputStream;
 using google::protobuf::Message;
 
-bool ReadProtoFromTextFile(const char* filename, Message* proto) {
+EmbCaffeDllExport bool ReadProtoFromTextFile(const char* filename, Message* proto) {
   int fd = open(filename, O_RDONLY);
   CHECK_NE(fd, -1) << "File not found: " << filename;
   FileInputStream* input = new FileInputStream(fd);
@@ -237,6 +237,7 @@ bool ReadFileToDatum(const string& filename, const int label,
 bool ReadXMLToAnnotatedDatum(const string& labelfile, const int img_height,
         const int img_width, const std::map<string, int>& name_to_label,
         AnnotatedDatum* anno_datum) {
+	/* YICM
     ptree pt;
     read_xml(labelfile, pt);
     // Parse annotation.
@@ -334,6 +335,7 @@ bool ReadXMLToAnnotatedDatum(const string& labelfile, const int img_height,
             }
         }
     }
+	*/
     return true;
 }
 
@@ -342,6 +344,7 @@ bool ReadXMLToAnnotatedDatum(const string& labelfile, const int img_height,
 bool ReadJSONToAnnotatedDatum(const string& labelfile, const int img_height,
         const int img_width, const std::map<string, int>& name_to_label,
         AnnotatedDatum* anno_datum) {
+	/* YICM
     ptree pt;
     read_json(labelfile, pt);
 
@@ -440,6 +443,7 @@ bool ReadJSONToAnnotatedDatum(const string& labelfile, const int img_height,
         bbox->set_ymax(ymax / height);
         bbox->set_difficult(iscrowd);
     }
+	*/
     return true;
 }
 
@@ -587,7 +591,7 @@ bool MapNameToLabel(const LabelMap& map, const bool strict_check,
     return true;
 }
 
-bool MapLabelToName(const LabelMap& map, const bool strict_check,
+EmbCaffeDllExport bool MapLabelToName(const LabelMap& map, const bool strict_check,
         std::map<int, string>* label_to_name) {
     // cleanup
     label_to_name->clear();
@@ -607,7 +611,7 @@ bool MapLabelToName(const LabelMap& map, const bool strict_check,
     return true;
 }
 
-bool MapLabelToDisplayName(const LabelMap& map, const bool strict_check,
+EmbCaffeDllExport bool MapLabelToDisplayName(const LabelMap& map, const bool strict_check,
         std::map<int, string>* label_to_display_name) {
     // cleanup
     label_to_display_name->clear();

@@ -2,6 +2,7 @@
 #define CAFFE_INTERNAL_THREAD_HPP_
 
 #include "caffe/common.hpp"
+#include "caffe/ycm_defines.h"
 
 /**
  Forward declare boost::thread instead of including boost/thread.hpp
@@ -16,7 +17,7 @@ namespace caffe {
  * The child class will acquire the ability to run a single thread,
  * by reimplementing the virtual function InternalThreadEntry.
  */
-class InternalThread {
+class EmbCaffeDllExport InternalThread {
  public:
   InternalThread() : thread_() {}
   virtual ~InternalThread();
