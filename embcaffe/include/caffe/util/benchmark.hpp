@@ -1,4 +1,4 @@
-#ifndef CAFFE_UTIL_BENCHMARK_H_
+﻿#ifndef CAFFE_UTIL_BENCHMARK_H_
 #define CAFFE_UTIL_BENCHMARK_H_
 
 #include <boost/date_time/posix_time/posix_time.hpp>

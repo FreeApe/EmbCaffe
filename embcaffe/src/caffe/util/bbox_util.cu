@@ -3,8 +3,9 @@
 #include <map>
 #include <vector>
 
-#include "thrust/functional.h"
-#include "thrust/sort.h"
+//YICM
+//#include "thrust/functional.h"
+//#include "thrust/sort.h"
 
 #include "caffe/common.hpp"
 #include "caffe/util/bbox_util.hpp"
@@ -451,8 +452,9 @@ void ApplyNMSGPU(const Dtype* bbox_data, const Dtype* conf_data,
     return;
   }
   // Sort detections based on score.
-  thrust::sort_by_key(&confidences[0], &confidences[0] + num_remain, &idx[0],
-      thrust::greater<Dtype>());
+  // YICM
+  //thrust::sort_by_key(&confidences[0], &confidences[0] + num_remain, &idx[0],
+  //    thrust::greater<Dtype>());
   if (top_k > -1 && top_k < num_remain) {
     num_remain = top_k;
   }

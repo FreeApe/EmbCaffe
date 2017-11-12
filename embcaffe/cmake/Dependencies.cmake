@@ -15,7 +15,7 @@ message(STATUS "Boost_ROOT ${Boost_ROOT}")
 if(NOT MSVC)
 	find_package(Boost 1.46 REQUIRED COMPONENTS system thread filesystem)
 else()
-	find_package(Boost 1.64.0)
+    find_package(Boost 1.59.0)
 endif()
 
 if(Boost_FOUND)
@@ -25,9 +25,9 @@ if(Boost_FOUND)
 	if(MSVC)
 		#unset(Boost_LIBRARIES CACHE)
 		set(Boost_LIBRARIES
-			"${Boost_LIBRARY_DIRS}/libboost_system-vc140-mt-1_64.lib"
-			"${Boost_LIBRARY_DIRS}/libboost_thread-vc140-mt-1_64.lib"
-			"${Boost_LIBRARY_DIRS}/libboost_filesystem-vc140-mt-1_64.lib"	
+			"${Boost_LIBRARY_DIRS}/libboost_system-vc140-mt-1_59.lib"
+			"${Boost_LIBRARY_DIRS}/libboost_thread-vc140-mt-1_59.lib"
+			"${Boost_LIBRARY_DIRS}/libboost_filesystem-vc140-mt-1_59.lib"	
 			)
 	endif()
 	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")

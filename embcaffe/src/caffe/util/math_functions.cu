@@ -63,13 +63,13 @@ void caffe_gpu_gemv<double>(const CBLAS_TRANSPOSE TransA, const int M,
 }
 
 template <>
-void caffe_gpu_axpy<float>(const int N, const float alpha, const float* X,
+EmbCaffeDllExport void caffe_gpu_axpy<float>(const int N, const float alpha, const float* X,
     float* Y) {
   CUBLAS_CHECK(cublasSaxpy(Caffe::cublas_handle(), N, &alpha, X, 1, Y, 1));
 }
 
 template <>
-void caffe_gpu_axpy<double>(const int N, const double alpha, const double* X,
+EmbCaffeDllExport void caffe_gpu_axpy<double>(const int N, const double alpha, const double* X,
     double* Y) {
   CUBLAS_CHECK(cublasDaxpy(Caffe::cublas_handle(), N, &alpha, X, 1, Y, 1));
 }
@@ -105,36 +105,36 @@ void caffe_gpu_axpby<double>(const int N, const double alpha, const double* X,
 }
 
 template <>
-void caffe_gpu_dot<float>(const int n, const float* x, const float* y,
+EmbCaffeDllExport void caffe_gpu_dot<float>(const int n, const float* x, const float* y,
     float* out) {
   CUBLAS_CHECK(cublasSdot(Caffe::cublas_handle(), n, x, 1, y, 1, out));
 }
 
 template <>
-void caffe_gpu_dot<double>(const int n, const double* x, const double* y,
+EmbCaffeDllExport void caffe_gpu_dot<double>(const int n, const double* x, const double* y,
     double * out) {
   CUBLAS_CHECK(cublasDdot(Caffe::cublas_handle(), n, x, 1, y, 1, out));
 }
 
 template <>
-void caffe_gpu_asum<float>(const int n, const float* x, float* y) {
+EmbCaffeDllExport void caffe_gpu_asum<float>(const int n, const float* x, float* y) {
   CUBLAS_CHECK(cublasSasum(Caffe::cublas_handle(), n, x, 1, y));
 }
 
 template <>
-void caffe_gpu_asum<double>(const int n, const double* x, double* y) {
+EmbCaffeDllExport void caffe_gpu_asum<double>(const int n, const double* x, double* y) {
   CUBLAS_CHECK(cublasDasum(Caffe::cublas_handle(), n, x, 1, y));
 }
 
 template <>
-void caffe_gpu_scale<float>(const int n, const float alpha, const float *x,
+EmbCaffeDllExport void caffe_gpu_scale<float>(const int n, const float alpha, const float *x,
                             float* y) {
   CUBLAS_CHECK(cublasScopy(Caffe::cublas_handle(), n, x, 1, y, 1));
   CUBLAS_CHECK(cublasSscal(Caffe::cublas_handle(), n, &alpha, y, 1));
 }
 
 template <>
-void caffe_gpu_scale<double>(const int n, const double alpha, const double *x,
+EmbCaffeDllExport void caffe_gpu_scale<double>(const int n, const double alpha, const double *x,
                              double* y) {
   CUBLAS_CHECK(cublasDcopy(Caffe::cublas_handle(), n, x, 1, y, 1));
   CUBLAS_CHECK(cublasDscal(Caffe::cublas_handle(), n, &alpha, y, 1));

@@ -42,7 +42,8 @@ caffe_option(ALLOW_LMDB_NOLOCK "Allow MDB_NOLOCK when reading LMDB files (only i
 
 if(BUILD_SHARED_LIBS)
     if(MSVC)
-        add_definitions(-DMSVC_DLL_EXPORT)
+        #add_definitions(-DMSVC_DLL_EXPORT)
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     endif()
 endif()
 
