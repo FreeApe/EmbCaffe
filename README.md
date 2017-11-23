@@ -10,7 +10,9 @@
 - Support ssd
 - Support ShuffleNet
 - Support MobileNet
-- Support GPU/CPU model(Windows only support CPU model now)
+- Support GPU/CPU model
+    - Window only support x86_64 archtecture in GPU mode.
+    - CPU_ONLY mode support x86/x86_64 archtecture on Win platform.
 - Cross-platform
 - Small
 - Remove the gtest
