@@ -8,6 +8,8 @@
 - Compact，Only forward calculation
 - Support faster rcnn
 - Support ssd
+- Support ShuffleNet
+- Support MobileNet
 - Support GPU/CPU model(Windows only support CPU model now)
 - Cross-platform
 - Small
@@ -33,6 +35,9 @@ cuDNN               : 5.0.5
 OpenCV              : N (for examples)
 ```
 ## Windows
+
+- CPU_ONLY mode support x86/x86_64 archtecture.
+- GPU model only support x86_64 archtecture, because NVIDIA only support the x86_64 archtecture libraries since CUDA7.0.
 
 ```
 System              : Windows

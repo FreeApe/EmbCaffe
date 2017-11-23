@@ -240,11 +240,20 @@ set(HAVE_CUDA TRUE)
 message(STATUS "CUDA detected: " ${CUDA_VERSION})
 include_directories(SYSTEM ${CUDA_INCLUDE_DIRS})
 # YICM
-#list(APPEND Caffe_LINKER_LIBS ${CUDA_CUDART_LIBRARY}
-#                              ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES})
+if(MSVC)
+    get_filename_component(CUDA_LIBS_DIR ${CUDA_CUDART_LIBRARY} DIRECTORY)
+    message(STATUS "CUDA_LIBS_DIR: ${CUDA_LIBS_DIR}")
+    list(APPEND Caffe_LINKER_LIBS ${CUDA_CUDART_LIBRARY}
+                                  ${CUDA_CUBLAS_LIBRARIES}
+                                  ${CUDA_LIBS_DIR}/cublas.lib
+                                  ${CUDA_LIBS_DIR}/curand.lib
+                                  ${CUDA_LIBS_DIR}/cuda.lib)
 
-list(APPEND Caffe_LINKER_LIBS ${CUDA_CUDART_LIBRARY}
-                              ${CUDA_CUBLAS_LIBRARIES})
+else()
+    list(APPEND Caffe_LINKER_LIBS ${CUDA_CUDART_LIBRARY}
+                              ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES})
+endif()
+
 # cudnn detection
 if(USE_CUDNN)
   detect_cuDNN()
